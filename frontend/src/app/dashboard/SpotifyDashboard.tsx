@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import styles from './SpotifyDashboard.module.css';
+import { SpotifyArtist, SpotifyTopArtistsResponse } from '../types/spotify';
 
 /**
  * SpotifyDashboard client component - main app component
@@ -20,25 +22,53 @@ const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = useState<string | null>(null);
+  const [artists, setArtists] = useState<SpotifyArtist[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  // get access token from query params and store in session storage
   useEffect(() => {
     const queryToken = searchParams.get('token');
+    const storedToken = sessionStorage.getItem('spotify_token');
 
     if (queryToken) {
       sessionStorage.setItem('spotify_token', queryToken);
       setToken(queryToken);
       router.replace('/dashboard');
+    } else if (storedToken) {
+      setToken(storedToken);
     } else {
-      const stored = sessionStorage.getItem('spotify_token');
-      if (stored) setToken(stored);
+      setLoading(false);
     }
   }, [searchParams, router]);
 
-  if (!token) return <p>Loading...</p>;
+  // fetch top artists data
+  useEffect(() => {
+    if (!token) return;
+
+    fetch('http://localhost:4000/top-artists', { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data: SpotifyTopArtistsResponse) => {
+        setArtists(data.items ?? []);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Top artists not found:', error);
+        setLoading(false);
+      });
+  }, [token]);
+
+  console.log('artists', artists);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div>
-      <h1>Spotify Dashboard After Login</h1>
+      <h1>Top Artists</h1>
+      <ol className={styles.artistList}>
+        {artists.map((artist) => (
+          <li key={artist.id}>{artist.name}</li>
+        ))}
+      </ol>
     </div>
   );
 };
