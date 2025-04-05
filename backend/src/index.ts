@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { getAuthUrl, getTokens } from './spotify';
 import axios from 'axios';
+import { SpotifyTopArtistsResponse } from '../types/spotify';
 
 // Express server setup for env, cors and to run on port 4000
 
@@ -53,7 +54,7 @@ app.get('/top-artists', async (req, res) => {
   }
 
   try {
-    const response = await axios.get('https://api.spotify.com/v1/me/top/artists', {
+    const response = await axios.get<SpotifyTopArtistsResponse>('https://api.spotify.com/v1/me/top/artists', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
