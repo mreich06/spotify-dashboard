@@ -2,7 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import styles from './page.module.css';
 
+export interface SpotifyImage {
+  height: number;
+  url: string;
+  width: number;
+}
+
+export interface SpotifyArtist {
+  id: string;
+  name: string;
+  genres: string[];
+  images: SpotifyImage[];
+  popularity: number;
+  uri: string;
+}
 /**
  * SpotifyDashboard client component - main app component
  *
@@ -20,7 +35,7 @@ const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = useState<string | null>(null);
-  const [artists, setArtists] = useState<unknown[]>([]); // TODO: change data type later
+  const [artists, setArtists] = useState<SpotifyArtist[]>([]);
   const [loading, setLoading] = useState(true);
 
   // get access token from query params and store in session storage
@@ -57,11 +72,16 @@ const SpotifyDashboard = () => {
 
   console.log('artists', artists);
 
-  if (!loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div>
-      <h1>Spotify Dashboard After Login</h1>
+      <h1>Top Artists</h1>
+      <ol className={styles.artistList}>
+        {artists.map((artist) => (
+          <li key={artist.id}>{artist.name}</li>
+        ))}
+      </ol>
     </div>
   );
 };
