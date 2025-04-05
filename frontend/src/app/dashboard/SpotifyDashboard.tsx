@@ -20,21 +20,44 @@ const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = useState<string | null>(null);
+  const [artists, setArtists] = useState<unknown[]>([]); // TODO: change data type later
+  const [loading, setLoading] = useState(true);
 
+  // get access token from query params and store in session storage
   useEffect(() => {
     const queryToken = searchParams.get('token');
+    const storedToken = sessionStorage.getItem('spotify_token');
 
     if (queryToken) {
       sessionStorage.setItem('spotify_token', queryToken);
       setToken(queryToken);
       router.replace('/dashboard');
+    } else if (storedToken) {
+      setToken(storedToken);
     } else {
-      const stored = sessionStorage.getItem('spotify_token');
-      if (stored) setToken(stored);
+      setLoading(false);
     }
   }, [searchParams, router]);
 
-  if (!token) return <p>Loading...</p>;
+  // fetch top artists data
+  useEffect(() => {
+    if (!token) return;
+
+    fetch('http://localhost:4000/top-artists', { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => res.json())
+      .then((data) => {
+        setArtists(data.items || []);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Top artists not found:', error);
+        setLoading(false);
+      });
+  }, [token]);
+
+  console.log('artists', artists);
+
+  if (!loading) return <p>Loading...</p>;
 
   return (
     <div>
