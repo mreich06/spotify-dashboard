@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import styles from './page.module.css';
+import styles from './SpotifyDashboard.module.css';
 import { SpotifyArtist, SpotifyTopArtistsResponse } from '../types/spotify';
 
 /**
@@ -48,7 +48,7 @@ const SpotifyDashboard = () => {
     fetch('http://localhost:4000/top-artists', { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((data: SpotifyTopArtistsResponse) => {
-        setArtists(data.items || []);
+        setArtists(data.items ?? []);
         setLoading(false);
       })
       .catch((error) => {

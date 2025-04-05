@@ -33,6 +33,7 @@ app.get('/callback', async (req: Request, res: Response) => {
 
   if (!code) {
     res.status(400).send('Authorization code is missing in callback');
+    return;
   }
 
   try {
