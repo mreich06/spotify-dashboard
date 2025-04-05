@@ -1,5 +1,8 @@
 import axios from 'axios';
 import qs from 'querystring';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const client_id = process.env.SPOTIFY_CLIENT_ID!;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET!;
