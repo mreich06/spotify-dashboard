@@ -62,8 +62,6 @@ export async function getTokens(code: string) {
     client_secret,
   };
 
-  console.log('data', data);
-
   const headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     Authorization: 'Basic ' + Buffer.from(`${client_id}:${client_secret}`).toString('base64'),
