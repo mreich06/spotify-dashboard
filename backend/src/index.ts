@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { getAuthUrl, getTokens } from './spotify';
 import axios from 'axios';
 import { SpotifyTopArtistsResponse } from '../types/spotify';
+import type { Request, Response } from 'express';
 
 // Express server setup for env, cors and to run on port 4000
 
@@ -27,7 +28,7 @@ app.get('/login', (req, res) => {
   res.redirect(getAuthUrl());
 });
 
-app.get('/callback', async (req, res) => {
+app.get('/callback', async (req: Request, res: Response) => {
   const code = req.query.code as string;
 
   if (!code) {

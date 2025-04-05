@@ -22,3 +22,12 @@ export interface SpotifyTopArtistsResponse {
   previous: string | null;
   next: string | null;
 }
+
+export interface SpotifyTokenResponse {
+  token_type: string;
+  access_token: string;
+  refresh_token: string;
+
+  expires_in: number;
+  scope: string;
+}

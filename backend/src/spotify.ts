@@ -1,6 +1,7 @@
 import axios from 'axios';
 import qs from 'querystring';
 import dotenv from 'dotenv';
+import { SpotifyTokenResponse } from '../types/spotify';
 
 dotenv.config();
 
@@ -53,7 +54,7 @@ export function getAuthUrl(): string {
  * @param code - The authorization code received from Spotify when login
  * @returns object with access token, refresh token, expiry time
  */
-export async function getTokens(code: string) {
+export async function getTokens(code: string): Promise<SpotifyTokenResponse> {
   const data = {
     grant_type: 'authorization_code',
     code,
@@ -67,7 +68,7 @@ export async function getTokens(code: string) {
     Authorization: 'Basic ' + Buffer.from(`${client_id}:${client_secret}`).toString('base64'),
   };
 
-  const response = await axios.post('https://accounts.spotify.com/api/token', qs.stringify(data), { headers });
+  const response = await axios.post<SpotifyTokenResponse>('https://accounts.spotify.com/api/token', qs.stringify(data), { headers });
 
   return response.data;
 }
