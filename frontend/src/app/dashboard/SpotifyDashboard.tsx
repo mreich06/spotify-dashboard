@@ -4,20 +4,6 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
-export interface SpotifyImage {
-  height: number;
-  url: string;
-  width: number;
-}
-
-export interface SpotifyArtist {
-  id: string;
-  name: string;
-  genres: string[];
-  images: SpotifyImage[];
-  popularity: number;
-  uri: string;
-}
 /**
  * SpotifyDashboard client component - main app component
  *
