@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import tokenReducer from './tokenSlice';
+import artistsReducer from './artistsSlice';
 
 export const store = configureStore({
   reducer: {
     token: tokenReducer,
+    artists: artistsReducer,
   },
 });
 
