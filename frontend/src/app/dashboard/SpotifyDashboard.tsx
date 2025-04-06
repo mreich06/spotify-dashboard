@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setToken } from '../store/tokenSlice';
 import { RootState } from '../store';
 import styles from './SpotifyDashboard.module.css';
@@ -24,9 +24,9 @@ import { SpotifyArtist, SpotifyTopArtistsResponse } from '../types/spotify';
 const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const token = useSelector((state: RootState) => state.token.accessToken);
+  const token = useAppSelector((state) => state.token.accessToken);
   const [artists, setArtists] = useState<SpotifyArtist[]>([]);
   const [loading, setLoading] = useState(true);
 
