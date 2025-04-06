@@ -1,13 +1,13 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
-export const fetchSpotifyData = async (endpoint: string, req: Request, res: Response) => {
+export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: Response) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) {
     res.status(401).send('Access token is missing');
   }
 
   try {
-    const response = await axios.get(`https://api.spotify.com/v1/${endpoint}`, {
+    const response = await axios.get<T>(`https://api.spotify.com/v1/${endpoint}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

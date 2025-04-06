@@ -23,6 +23,16 @@ export interface SpotifyTopArtistsResponse {
   next: string | null;
 }
 
+export interface SpotifyTopTracksResponse {
+  href: string;
+  limit: number;
+  next: string | null;
+  offset: number;
+  previous: string | null;
+  total: number;
+  items: SpotifyArtist[];
+}
+
 export interface SpotifyTokenResponse {
   token_type: string;
   access_token: string;
