@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { setToken } from '../store/tokenSlice';
 import styles from './SpotifyDashboard.module.css';
-import { SpotifyArtist, SpotifyTopArtistsResponse } from '../types/spotify';
-
+import { fetchTopArtists } from '../store/artistsSlice';
+import sharedStyles from '../styles/shared.module.css';
 /**
  * SpotifyDashboard client component - main app component
  *
@@ -21,45 +23,52 @@ import { SpotifyArtist, SpotifyTopArtistsResponse } from '../types/spotify';
 const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [token, setToken] = useState<string | null>(null);
-  const [artists, setArtists] = useState<SpotifyArtist[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
 
-  // get access token from query params and store in session storage
+  const token = useAppSelector((state) => state.token.accessToken);
+  const { artists, loading, error } = useAppSelector((state) => state.artists);
+  const [tokenLoading, setTokenLoading] = useState(true);
+
+  // Get token from URL or sessionStorage and store in Redux
   useEffect(() => {
     const queryToken = searchParams.get('token');
     const storedToken = sessionStorage.getItem('spotify_token');
 
     if (queryToken) {
       sessionStorage.setItem('spotify_token', queryToken);
-      setToken(queryToken);
+      dispatch(setToken(queryToken));
       router.replace('/dashboard');
+      setTokenLoading(false);
     } else if (storedToken) {
-      setToken(storedToken);
+      dispatch(setToken(storedToken));
+      setTokenLoading(false);
     } else {
-      setLoading(false);
+      setTokenLoading(false);
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, dispatch]);
 
   // fetch top artists data
   useEffect(() => {
     if (!token) return;
+    dispatch(fetchTopArtists(token));
+  }, [token, dispatch]);
 
-    fetch('http://localhost:4000/top-artists', { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => res.json())
-      .then((data: SpotifyTopArtistsResponse) => {
-        setArtists(data.items ?? []);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Top artists not found:', error);
-        setLoading(false);
-      });
-  }, [token]);
+  if (tokenLoading) return <p>Connecting to your Spotify account</p>;
 
-  console.log('artists', artists);
+  if (!token) {
+    return (
+      <div className={styles.tokenExpiredMsg}>
+        <h2 className={styles.loginHeader}>Session Expired</h2>
+        <p className={styles.loginMsg}>Please login again to continue</p>
+        <button onClick={() => router.push('http://localhost:4000/login')} className={sharedStyles.button}>
+          Reconnect to Spotify
+        </button>
+      </div>
+    );
+  }
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading your top artists...</p>;
+  if (error) return <p>Error loading top artists: {error}</p>;
 
   return (
     <div>
