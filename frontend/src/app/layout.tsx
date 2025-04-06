@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Provider } from 'react-redux';
-import store from './store';
+import { store } from './store';
 export const metadata: Metadata = {
   title: 'Spotify Dashboard',
   description: 'Visualize your Spotify listening history',

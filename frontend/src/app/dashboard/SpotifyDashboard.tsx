@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { setToken } from '../store/tokenSlice';
+import { RootState } from '../store';
 import styles from './SpotifyDashboard.module.css';
 import { SpotifyArtist, SpotifyTopArtistsResponse } from '../types/spotify';
 
@@ -21,43 +24,47 @@ import { SpotifyArtist, SpotifyTopArtistsResponse } from '../types/spotify';
 const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [token, setToken] = useState<string | null>(null);
+  const dispatch = useDispatch();
+
+  const token = useSelector((state: RootState) => state.token.accessToken);
   const [artists, setArtists] = useState<SpotifyArtist[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // get access token from query params and store in session storage
+  // Get token from URL or sessionStorage and store in Redux
   useEffect(() => {
     const queryToken = searchParams.get('token');
     const storedToken = sessionStorage.getItem('spotify_token');
 
     if (queryToken) {
       sessionStorage.setItem('spotify_token', queryToken);
-      setToken(queryToken);
+      dispatch(setToken(queryToken));
       router.replace('/dashboard');
     } else if (storedToken) {
-      setToken(storedToken);
+      dispatch(setToken(storedToken));
     } else {
       setLoading(false);
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, dispatch]);
 
   // fetch top artists data
   useEffect(() => {
     if (!token) return;
 
-    fetch('http://localhost:4000/top-artists', { headers: { Authorization: `Bearer ${token}` } })
+    fetch('http://localhost:4000/top-artists', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data: SpotifyTopArtistsResponse) => {
-        setArtists(data.items ?? []);
+        setArtists(data.items || []);
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Top artists not found:', error);
+        console.error('Error fetching top artists:', error);
         setLoading(false);
       });
   }, [token]);
-
-  console.log('artists', artists);
 
   if (loading) return <p>Loading...</p>;
 
