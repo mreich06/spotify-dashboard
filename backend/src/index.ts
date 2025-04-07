@@ -2,9 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { getAuthUrl, getTokens } from './spotify';
-import axios from 'axios';
-import { SpotifyTopArtistsResponse } from '../types/spotify';
+import { SpotifyTopArtistsResponse, SpotifyTopTracksResponse } from '../types/spotify';
 import type { Request, Response } from 'express';
+import { fetchSpotifyData } from './spotifyRequest';
 
 // Express server setup for env, cors and to run on port 4000
 
@@ -48,22 +48,10 @@ app.get('/callback', async (req: Request, res: Response) => {
 
 // GET endpoint for top-artists data from Spotify
 app.get('/top-artists', async (req, res) => {
-  const token = req.headers.authorization?.replace('Bearer ', '');
+  fetchSpotifyData<SpotifyTopArtistsResponse>('me/top/artists', req, res);
+});
 
-  if (!token) {
-    res.status(401).send('Access token is missing');
-    return;
-  }
-
-  try {
-    const response = await axios.get<SpotifyTopArtistsResponse>('https://api.spotify.com/v1/me/top/artists', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error fetching top artists:', error);
-    res.status(500).send('Failed to fetch top artists');
-  }
+// GET endpoint for top-tracks data from spotify
+app.get('/top-tracks', async (req, res) => {
+  fetchSpotifyData<SpotifyTopTracksResponse>('me/top/tracks', req, res);
 });
