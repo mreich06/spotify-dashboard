@@ -5,8 +5,10 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setToken } from '../store/tokenSlice';
 import styles from './SpotifyDashboard.module.css';
-import { fetchTopArtists } from '../store/artistsSlice';
 import sharedStyles from '../styles/shared.module.css';
+import { fetchTopTracks } from '../store/topTracksSlice';
+import TopArtists from '../components/TopArtists/TopArtists';
+import TopTracks from '../components/TopTracks/TopTracks';
 /**
  * SpotifyDashboard client component - main app component
  *
@@ -26,7 +28,6 @@ const SpotifyDashboard = () => {
   const dispatch = useAppDispatch();
 
   const token = useAppSelector((state) => state.token.accessToken);
-  const { artists, loading, error } = useAppSelector((state) => state.artists);
   const [tokenLoading, setTokenLoading] = useState(true);
 
   // Get token from URL or sessionStorage and store in Redux
@@ -47,12 +48,6 @@ const SpotifyDashboard = () => {
     }
   }, [searchParams, router, dispatch]);
 
-  // fetch top artists data
-  useEffect(() => {
-    if (!token) return;
-    dispatch(fetchTopArtists(token));
-  }, [token, dispatch]);
-
   if (tokenLoading) return <p>Connecting to your Spotify account</p>;
 
   if (!token) {
@@ -67,18 +62,11 @@ const SpotifyDashboard = () => {
     );
   }
 
-  if (loading) return <p>Loading your top artists...</p>;
-  if (error) return <p>Error loading top artists: {error}</p>;
-
   return (
-    <div>
-      <h1>Top Artists</h1>
-      <ol className={styles.artistList}>
-        {artists.map((artist) => (
-          <li key={artist.id}>{artist.name}</li>
-        ))}
-      </ol>
-    </div>
+    <>
+      <TopArtists />
+      <TopTracks />
+    </>
   );
 };
 
