@@ -1,9 +1,12 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
-export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: Response) => {
+
+export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: Response): Promise<void> => {
   const token = req.headers.authorization?.replace('Bearer ', '');
+
   if (!token) {
-    res.status(401).send('Access token is missing');
+    res.status(401).json({ error: 'Access token is missing' });
+    return;
   }
 
   try {
@@ -14,7 +17,7 @@ export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: R
     });
     res.json(response.data);
   } catch (error) {
-    console.error(`Error fetching ${endpoint}}:`, error);
-    res.status(500).send(`Failed to fetch ${endpoint}`);
+    console.error(`Error fetching ${endpoint}:`, error);
+    res.status(500).json({ error: `Failed to fetch ${endpoint}` });
   }
 };
