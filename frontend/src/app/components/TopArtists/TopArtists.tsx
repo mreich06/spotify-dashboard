@@ -5,6 +5,13 @@ import styles from './TopArtists.module.css';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchTopArtists } from '@/app/store/artistsSlice';
 
+/**
+ * TopArtists component
+ *
+ * Creates a component that lists the top artists for that user
+ * Fetches the top artists and displays loading state while fetching
+ *
+ */
 const TopArtists = () => {
   const dispatch = useAppDispatch();
   const { artists, loading, error } = useAppSelector((state) => state.artists);

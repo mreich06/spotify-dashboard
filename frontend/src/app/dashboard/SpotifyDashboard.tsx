@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setToken } from '../store/tokenSlice';
 import styles from './SpotifyDashboard.module.css';
 import sharedStyles from '../styles/shared.module.css';
-import { fetchTopTracks } from '../store/topTracksSlice';
 import TopArtists from '../components/TopArtists/TopArtists';
 import TopTracks from '../components/TopTracks/TopTracks';
 /**
@@ -19,8 +18,8 @@ import TopTracks from '../components/TopTracks/TopTracks';
  * 2. Stores token in sessionStorage for later
  * 3. Update state to trigger a re-render
  * 4. Cleans up  URL using Next.js router
+ * 5. Displays Spotify metrics data by getting data from Redux
  *
- * Displays a loading message until we have the token
  */
 const SpotifyDashboard = () => {
   const router = useRouter();

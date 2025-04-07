@@ -4,6 +4,13 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchTopTracks } from '@/app/store/topTracksSlice';
 
+/**
+ * TopTracks component
+ *
+ * Creates a component that lists the top tracks for that user
+ * Fetches the top tracks and displays loading state while fetching
+ *
+ */
 const TopTracks = () => {
   const dispatch = useAppDispatch();
   const { topTracks, loading, error } = useAppSelector((state) => state.topTracks);
