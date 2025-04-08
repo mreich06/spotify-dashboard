@@ -17,11 +17,10 @@ export interface SpotifyArtist {
 // /users/{user_id}/playlists
 // list of all playlists
 export interface SpotifyPlaylistsResponse {
-  id: string;
   href: string;
   limit: number;
   total: number;
-  items: SpotifyPlaylist;
+  items: SpotifyPlaylist[];
 }
 
 export interface SpotifyPlaylist {

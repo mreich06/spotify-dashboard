@@ -32,3 +32,21 @@ export interface SpotifyTopTracksResponse {
   total: number;
   items: SpotifyArtist[];
 }
+
+export interface SpotifyPlaylistsResponse {
+  href: string;
+  limit: number;
+  total: number;
+  items: SpotifyPlaylist[];
+}
+
+export interface SpotifyPlaylist {
+  id: string;
+  href: string;
+  images: SpotifyImage[];
+  name: string;
+  tracks: {
+    href: string;
+    total: number;
+  };
+}
