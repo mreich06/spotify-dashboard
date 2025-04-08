@@ -14,7 +14,10 @@ const initialState: PlaylistsState = {
   error: null,
 };
 
-export const fetchPlaylists = createApiThunk<SpotifyPlaylistsResponse>('/playlists/fetchPlaylists', 'http://localhost:4000/playlists');
+export const fetchPlaylists = createApiThunk<SpotifyPlaylistsResponse>(
+  '/playlists/fetchPlaylists',
+  `${process.env.NEXT_PUBLIC_BACKEND_URL}/playlists`,
+);
 
 const playlistsSlice = createSlice({
   name: 'playlists',

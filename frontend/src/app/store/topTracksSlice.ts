@@ -13,7 +13,7 @@ const initialState: TopTracksState = {
   error: null,
 };
 
-export const fetchTopTracks = createApiThunk<SpotifyTopTracksResponse>('/tracks/fetchTopTracks', 'http://localhost:4000/top-tracks');
+export const fetchTopTracks = createApiThunk<SpotifyTopTracksResponse>('/tracks/fetchTopTracks', `${process.env.NEXT_PUBLIC_BACKEND_URL}/top-tracks`);
 
 const topTracksSlice = createSlice({
   name: 'top-tracks',

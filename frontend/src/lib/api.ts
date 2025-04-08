@@ -17,7 +17,7 @@ api.interceptors.response.use(
         if (!refreshToken) throw new Error('Missing refresh token');
 
         // Ask backend to refresh token
-        const res = await axios.post('http://localhost:4000/auth/refresh', {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
           refresh_token: refreshToken,
         });
 
@@ -37,7 +37,7 @@ api.interceptors.response.use(
         localStorage.removeItem('refresh_token');
 
         // redirect to login if the token refresh fails
-        window.location.href = 'http://localhost:4000/auth/login';
+        window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
         return Promise.reject(refreshError);
       }
     }

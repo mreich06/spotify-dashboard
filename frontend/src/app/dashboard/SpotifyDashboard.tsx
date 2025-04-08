@@ -54,7 +54,7 @@ const SpotifyDashboard = () => {
       <div className={styles.tokenExpiredMsg}>
         <h2 className={styles.loginHeader}>Session Expired</h2>
         <p className={styles.loginMsg}>Please login again to continue</p>
-        <button onClick={() => router.push('http://localhost:4000/login')} className={sharedStyles.button}>
+        <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`)} className={sharedStyles.button}>
           Reconnect to Spotify
         </button>
       </div>

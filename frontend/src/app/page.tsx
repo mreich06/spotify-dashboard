@@ -8,7 +8,8 @@ const Home = () => {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push('http://localhost:4000/login'); // Express OAuth login route
+    router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`); // Express OAuth login route
+    console.log('API:', process.env.NEXT_PUBLIC_BACKEND_URL);
   };
 
   return (

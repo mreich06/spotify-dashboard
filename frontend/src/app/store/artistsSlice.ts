@@ -16,11 +16,11 @@ const initialState: ArtistsState = {
 
 // Thunk to create artists
 export const fetchTopArtists = createAsyncThunk('/artists/fetchTopArtists', async () => {
-  const response = await api.get('http://localhost:4000/top-artists');
+  const response = await api.get(`${process.env.NEXT_PUBLIC__URL}/top-artists`);
   const data: SpotifyTopArtistsResponse = await response.data;
   return data.items;
 });
-export const fetchTopTracks = createApiThunk<SpotifyTopTracksResponse>('/tracks/fetchTopTracks', 'http://localhost:4000/top-tracks');
+export const fetchTopTracks = createApiThunk<SpotifyTopTracksResponse>('/tracks/fetchTopTracks', `${process.env.NEXT_PUBLIC__URL}/top-tracks`);
 
 const artistsSlice = createSlice({
   name: 'artists',
