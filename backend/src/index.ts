@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { getAuthUrl, getTokens } from './spotify';
-import { SpotifyTopArtistsResponse, SpotifyTopTracksResponse } from '../types/spotify';
+import { SpotifyPlaylistsResponse, SpotifyTopArtistsResponse, SpotifyTopTracksResponse } from '../types/spotify';
 import type { Request, Response } from 'express';
 import { fetchSpotifyData } from './spotifyRequest';
 
@@ -54,4 +54,9 @@ app.get('/top-artists', async (req, res) => {
 // GET endpoint for top-tracks data from spotify
 app.get('/top-tracks', async (req, res) => {
   fetchSpotifyData<SpotifyTopTracksResponse>('me/top/tracks', req, res);
+});
+
+// GET endpoint for playlists data from spotify
+app.get('/playlists', async (req, res) => {
+  fetchSpotifyData<SpotifyPlaylistsResponse>('me/playlists', req, res);
 });
