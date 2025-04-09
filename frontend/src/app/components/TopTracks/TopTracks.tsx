@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchTopTracks } from '@/app/store/topTracksSlice';
+import styles from './TopTracks.module.css';
 
 /**
  * TopTracks component
@@ -14,21 +15,23 @@ import { fetchTopTracks } from '@/app/store/topTracksSlice';
 const TopTracks = () => {
   const dispatch = useAppDispatch();
   const { topTracks, loading, error } = useAppSelector((state) => state.topTracks);
-  const token = useAppSelector((state) => state.token.accessToken);
 
   useEffect(() => {
-    if (!token) return;
-    dispatch(fetchTopTracks(token));
-  }, [token, dispatch]);
+    dispatch(fetchTopTracks());
+  }, [dispatch]);
   if (loading) return <p>Loading your top tracks...</p>;
   if (error) return <p>Error loading top tracks: {error}</p>;
 
   return (
-    <ol>
-      {topTracks.map((item) => (
-        <li key={item.id}>{item.name}</li>
-      ))}
-    </ol>
+    <div className={styles.tracksContainer}>
+      <h1>Top Tracks</h1>
+
+      <ol>
+        {topTracks.map((item) => (
+          <li key={item.id}>{item.name}</li>
+        ))}
+      </ol>
+    </div>
   );
 };
 

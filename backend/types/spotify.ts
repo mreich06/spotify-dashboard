@@ -1,3 +1,4 @@
+// Spotify types reference - https://developer.spotify.com/documentation/web-api/reference
 export interface SpotifyImage {
   height: number;
   url: string;
@@ -13,6 +14,26 @@ export interface SpotifyArtist {
   uri: string;
 }
 
+// /users/{user_id}/playlists
+// list of all playlists
+export interface SpotifyPlaylistsResponse {
+  href: string;
+  limit: number;
+  total: number;
+  items: SpotifyPlaylist[];
+}
+
+export interface SpotifyPlaylist {
+  id: string;
+  href: string;
+  images: SpotifyImage[];
+  name: string;
+  tracks: {
+    href: string;
+    total: number;
+  };
+}
+
 export interface SpotifyTopArtistsResponse {
   items: SpotifyArtist[];
   total: number;
@@ -23,6 +44,20 @@ export interface SpotifyTopArtistsResponse {
   next: string | null;
 }
 
+export interface SpotifyTrack {
+  album: {
+    album_type: string;
+    total_tracks: number;
+    available_markets: string[];
+  };
+  external_urls: { spotify: string };
+  id: string;
+  genres: string[];
+  images: SpotifyImage[];
+  name: string;
+  duration_ms: number;
+}
+
 export interface SpotifyTopTracksResponse {
   href: string;
   limit: number;
@@ -30,7 +65,7 @@ export interface SpotifyTopTracksResponse {
   offset: number;
   previous: string | null;
   total: number;
-  items: SpotifyArtist[];
+  items: SpotifyTrack[];
 }
 
 export interface SpotifyTokenResponse {

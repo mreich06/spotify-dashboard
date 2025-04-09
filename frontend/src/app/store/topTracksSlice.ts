@@ -1,5 +1,6 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import type { SpotifyArtist, SpotifyTopTracksResponse } from '../types/spotify';
+import { createApiThunk } from '../utils/createApiThunk';
 
 interface TopTracksState {
   topTracks: SpotifyArtist[];
@@ -12,13 +13,7 @@ const initialState: TopTracksState = {
   error: null,
 };
 
-export const fetchTopTracks = createAsyncThunk('/tracks/fetchTopTracks', async (token: string) => {
-  const response = await fetch('http://localhost:4000/top-tracks', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data: SpotifyTopTracksResponse = await response.json();
-  return data.items;
-});
+export const fetchTopTracks = createApiThunk<SpotifyTopTracksResponse>('/tracks/fetchTopTracks', '/top-tracks');
 
 const topTracksSlice = createSlice({
   name: 'top-tracks',
@@ -32,7 +27,7 @@ const topTracksSlice = createSlice({
       })
       .addCase(fetchTopTracks.fulfilled, (state, action) => {
         state.loading = false;
-        state.topTracks = action.payload;
+        state.topTracks = action.payload.items;
       })
       .addCase(fetchTopTracks.rejected, (state, action) => {
         state.loading = false;

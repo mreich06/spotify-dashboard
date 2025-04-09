@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'querystring';
 import dotenv from 'dotenv';
-import { SpotifyTokenResponse } from '../types/spotify';
+import type { SpotifyTokenResponse } from '../../types/spotify';
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ const redirect_uri = process.env.SPOTIFY_REDIRECT_URI!;
  * - response_type
  * - redirect_uri
  */
-export function getAuthUrl(): string {
+export function getAuthUrl(returnTo: string): string {
   // data we are requesting from Spotify user profile
   const scope = [
     'user-top-read',
@@ -37,6 +37,7 @@ export function getAuthUrl(): string {
     client_id,
     scope,
     redirect_uri,
+    state: returnTo,
   });
   return `https://accounts.spotify.com/authorize?${query}`;
 }
@@ -54,7 +55,7 @@ export function getAuthUrl(): string {
  * @param code - The authorization code received from Spotify when login
  * @returns object with access token, refresh token, expiry time
  */
-export async function getTokens(code: string): Promise<SpotifyTokenResponse> {
+export const getTokens = async (code: string): Promise<SpotifyTokenResponse> => {
   const data = {
     grant_type: 'authorization_code',
     code,
@@ -71,4 +72,4 @@ export async function getTokens(code: string): Promise<SpotifyTokenResponse> {
   const response = await axios.post<SpotifyTokenResponse>('https://accounts.spotify.com/api/token', qs.stringify(data), { headers });
 
   return response.data;
-}
+};
