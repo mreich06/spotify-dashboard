@@ -1,6 +1,5 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import type { SpotifyArtist, SpotifyTopArtistsResponse, SpotifyTopTracksResponse } from '../types/spotify';
-import api from '@/lib/api';
 import { createApiThunk } from '../utils/createApiThunk';
 interface ArtistsState {
   artists: SpotifyArtist[];
@@ -15,12 +14,7 @@ const initialState: ArtistsState = {
 };
 
 // Thunk to create artists
-export const fetchTopArtists = createAsyncThunk('/artists/fetchTopArtists', async () => {
-  const response = await api.get(`${process.env.NEXT_PUBLIC__URL}/top-artists`);
-  const data: SpotifyTopArtistsResponse = await response.data;
-  return data.items;
-});
-export const fetchTopTracks = createApiThunk<SpotifyTopTracksResponse>('/tracks/fetchTopTracks', `${process.env.NEXT_PUBLIC__URL}/top-tracks`);
+export const fetchTopArtists = createApiThunk<SpotifyTopArtistsResponse>('artists/fetchTopArtists', '/top-artists');
 
 const artistsSlice = createSlice({
   name: 'artists',
@@ -34,7 +28,7 @@ const artistsSlice = createSlice({
       })
       .addCase(fetchTopArtists.fulfilled, (state, action) => {
         state.loading = false;
-        state.artists = action.payload;
+        state.artists = action.payload.items;
       })
       .addCase(fetchTopArtists.rejected, (state, action) => {
         state.loading = false;

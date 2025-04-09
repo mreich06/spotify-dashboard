@@ -18,7 +18,7 @@ const TopTracks = () => {
 
   useEffect(() => {
     if (!token) return;
-    dispatch(fetchTopTracks(token));
+    dispatch(fetchTopTracks());
   }, [token, dispatch]);
   if (loading) return <p>Loading your top tracks...</p>;
   if (error) return <p>Error loading top tracks: {error}</p>;

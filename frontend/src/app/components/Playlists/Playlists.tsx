@@ -19,7 +19,7 @@ const Playlists = () => {
 
   useEffect(() => {
     if (!token) return;
-    dispatch(fetchPlaylists(token));
+    dispatch(fetchPlaylists());
   }, [dispatch, token]);
 
   if (loading) return <p>Loading your playlists...</p>;

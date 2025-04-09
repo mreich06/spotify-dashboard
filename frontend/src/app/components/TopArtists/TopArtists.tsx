@@ -19,7 +19,7 @@ const TopArtists = () => {
 
   useEffect(() => {
     if (!token) return;
-    dispatch(fetchTopArtists(token));
+    dispatch(fetchTopArtists());
   }, [token, dispatch]);
 
   if (loading) return <p>Loading your top artists...</p>;

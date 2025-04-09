@@ -4,40 +4,56 @@ import axios from 'axios';
 // if that fails, it shoul redirect user to login - the /auth/login route which will
 // redirect to Spotify login page
 
-// creates reusable axios instance
-const api = axios.create();
+// Create an Axios instance with backend base URL
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+});
 
-// to catch responses
+// Request interceptor-  Add access token to every request
+api.interceptors.request.use((config) => {
+  const accessToken = localStorage.getItem('access_token');
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
+});
+
+// Response Interceptor- Refresh token on 401 error
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
-    if (err.response?.status === 401) {
+    const originalRequest = err.config;
+
+    // If 401 unauthorized, try refreshing token
+    // this happens when spotify access token has expired
+    if (err.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
       try {
         const refreshToken = localStorage.getItem('refresh_token');
         if (!refreshToken) throw new Error('Missing refresh token');
 
-        // Ask backend to refresh token
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
-          refresh_token: refreshToken,
-        });
+        const refreshRes = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+          { refresh_token: refreshToken },
+          { headers: { 'Content-Type': 'application/json' } },
+        );
 
-        const newAccessToken = res.data.access_token;
-        localStorage.setItem('access_token', newAccessToken); // save new token
+        // we get response from backend and save it in localstorage
+        const newAccessToken = refreshRes.data.access_token;
+        localStorage.setItem('access_token', newAccessToken);
 
-        // Update request with the refresh token
-        err.config.headers['Authorization'] = `Bearer ${newAccessToken}`;
-
-        // Retry original request
-        return axios(err.config);
+        // Retry request with new token
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axios(originalRequest);
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError);
 
-        // clean up tokens before redirecting
+        // Clea up tokens, redirect to login
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-
-        // redirect to login if the token refresh fails
         window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
+
         return Promise.reject(refreshError);
       }
     }
