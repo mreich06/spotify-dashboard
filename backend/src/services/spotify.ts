@@ -21,7 +21,7 @@ const redirect_uri = process.env.SPOTIFY_REDIRECT_URI!;
  * - response_type
  * - redirect_uri
  */
-export function getAuthUrl(): string {
+export function getAuthUrl(returnTo: string): string {
   // data we are requesting from Spotify user profile
   const scope = [
     'user-top-read',
@@ -37,6 +37,7 @@ export function getAuthUrl(): string {
     client_id,
     scope,
     redirect_uri,
+    state: returnTo,
   });
   return `https://accounts.spotify.com/authorize?${query}`;
 }

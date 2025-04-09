@@ -8,7 +8,8 @@ const Home = () => {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`); // Express OAuth login route
+    // Express OAuth login route that redirects to dashboard after login
+    router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login?returnTo=/dashboard`);
     console.log('API:', process.env.NEXT_PUBLIC_BACKEND_URL);
   };
 

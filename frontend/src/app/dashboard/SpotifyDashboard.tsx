@@ -12,10 +12,10 @@ import TopTracks from '../components/TopTracks/TopTracks';
  * SpotifyDashboard client component - main app component
  *
  * Handles the post-login flow by getting the Spotify access token from the URL
- * or sessionStorage if it exists. Then store it in local state and remove token from the URL
+ * or localStorage if it exists. Then store it in local state and remove token from the URL
  *
  * 1. Extract token from the URL query string after OAuth redirect
- * 2. Stores token in sessionStorage for later
+ * 2. Stores token in localStorage for later
  * 3. Update state to trigger a re-render
  * 4. Cleans up  URL using Next.js router
  * 5. Displays Spotify metrics data by getting data from Redux
@@ -29,14 +29,19 @@ const SpotifyDashboard = () => {
   const token = useAppSelector((state) => state.token.accessToken);
   const [tokenLoading, setTokenLoading] = useState(true);
 
-  // Get token from URL or sessionStorage and store in Redux
+  // Get token from URL or localStorage and store in Redux
+  // refresh token stored in localStorage for interceptor to access
   useEffect(() => {
-    const queryToken = searchParams.get('token');
-    const storedToken = sessionStorage.getItem('spotify_token');
+    const accessToken = searchParams.get('access_token');
+    const refreshToken = searchParams.get('refresh_token');
+    const storedToken = localStorage.getItem('access_token');
 
-    if (queryToken) {
-      sessionStorage.setItem('spotify_token', queryToken);
-      dispatch(setToken(queryToken));
+    if (accessToken) {
+      localStorage.setItem('access_token', accessToken);
+      if (refreshToken) {
+        localStorage.setItem('refresh_token', refreshToken);
+      }
+      dispatch(setToken(accessToken));
       router.replace('/dashboard');
       setTokenLoading(false);
     } else if (storedToken) {

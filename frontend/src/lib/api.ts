@@ -52,7 +52,8 @@ api.interceptors.response.use(
         // Clea up tokens, redirect to login
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
-        window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
+        const returnTo = encodeURIComponent(window.location.pathname);
+        window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login?returnTo=${returnTo}`;
 
         return Promise.reject(refreshError);
       }

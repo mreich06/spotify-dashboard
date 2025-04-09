@@ -10,7 +10,9 @@ const router = express.Router();
 
 // redirect to OAuth upon login
 router.get('/login', (req, res) => {
-  res.redirect(getAuthUrl());
+  const returnTo = req.query.returnTo || '/dashboard';
+  const url = getAuthUrl(returnTo as string);
+  res.redirect(url);
 });
 
 // get access token using auth code
@@ -25,7 +27,10 @@ router.get('/callback', async (req: Request, res: Response) => {
   try {
     const tokens = await getTokens(code);
     // Redirect back to frontend with access token in query (temporary solution)
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard?token=${tokens.access_token}`);
+    // return them to page they originally came from with returnTo query param
+    const returnTo = req.query.state || '/dashboard';
+    // redirect with both access and refresh tokens
+    res.redirect(`${process.env.FRONTEND_URL}${returnTo}?access_token=${tokens.access_token}&refresh_token=${tokens.refresh_token}`);
   } catch (error) {
     console.log('Error getting access token:', error);
     res.status(500).send('Failed to get access token from Spotify');
