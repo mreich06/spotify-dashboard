@@ -15,18 +15,16 @@ import styles from './Playlists.module.css';
 const Playlists = () => {
   const dispatch = useAppDispatch();
   const { playlists, loading, error } = useAppSelector((state) => state.playlists);
-  const token = useAppSelector((state) => state.token.accessToken);
 
   useEffect(() => {
-    if (!token) return;
     dispatch(fetchPlaylists());
-  }, [dispatch, token]);
+  }, [dispatch]);
 
   if (loading) return <p>Loading your playlists...</p>;
   if (error) return <p>Error loading playlists: {error}</p>;
   return (
-    <div>
-      <h1>Top Artists</h1>
+    <div className={styles.playlistsContainer}>
+      <h1>My Playlists</h1>
       <ol className={styles.playlist}>
         {playlists.items.map((playlist) => (
           <li key={playlist.id}>{playlist.name}</li>

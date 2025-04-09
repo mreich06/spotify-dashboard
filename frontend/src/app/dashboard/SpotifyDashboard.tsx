@@ -8,6 +8,7 @@ import styles from './SpotifyDashboard.module.css';
 import sharedStyles from '../styles/shared.module.css';
 import TopArtists from '../components/TopArtists/TopArtists';
 import TopTracks from '../components/TopTracks/TopTracks';
+import Playlists from '../components/Playlists/Playlists';
 /**
  * SpotifyDashboard client component - main app component
  *
@@ -67,10 +68,11 @@ const SpotifyDashboard = () => {
   }
 
   return (
-    <>
+    <div className={styles.dashboardContainer}>
       <TopArtists />
       <TopTracks />
-    </>
+      <Playlists />
+    </div>
   );
 };
 
