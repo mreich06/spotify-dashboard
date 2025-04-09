@@ -8,19 +8,21 @@ import { fetchTopArtists } from '@/app/store/artistsSlice';
 /**
  * TopArtists component
  *
- * Creates a component that lists the top artists for that user
+ * Creates a component that lists the top artists in the medium term for that user
  * Fetches the top artists and displays loading state while fetching
  *
  */
 const TopArtists = () => {
   const dispatch = useAppDispatch();
-  const { artists, loading, error } = useAppSelector((state) => state.artists);
-  const token = useAppSelector((state) => state.token.accessToken);
+  const {
+    artists: { medium_term },
+    loading,
+    error,
+  } = useAppSelector((state) => state.artists);
 
   useEffect(() => {
-    if (!token) return;
     dispatch(fetchTopArtists());
-  }, [token, dispatch]);
+  }, [dispatch]);
 
   if (loading) return <p>Loading your top artists...</p>;
   if (error) return <p>Error loading top artists: {error}</p>;
@@ -28,7 +30,7 @@ const TopArtists = () => {
     <div>
       <h1>Top Artists</h1>
       <ol className={styles.artistList}>
-        {artists.map((artist) => (
+        {medium_term.map((artist) => (
           <li key={artist.id}>{artist.name}</li>
         ))}
       </ol>

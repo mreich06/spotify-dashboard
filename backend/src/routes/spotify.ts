@@ -7,7 +7,8 @@ const router = express.Router();
 
 // GET endpoint for top-artists data from Spotify
 router.get('/top-artists', async (req: Request, res: Response) => {
-  fetchSpotifyData<SpotifyTopArtistsResponse>('me/top/artists', req, res);
+  const timeRange = req.query.time_range || 'medium_term';
+  fetchSpotifyData<SpotifyTopArtistsResponse>(`me/top/artists?time_range=${timeRange}`, req, res);
 });
 
 // GET endpoint for top-tracks data from spotify
