@@ -55,7 +55,7 @@ export function getAuthUrl(returnTo: string): string {
  * @param code - The authorization code received from Spotify when login
  * @returns object with access token, refresh token, expiry time
  */
-export async function getTokens(code: string): Promise<SpotifyTokenResponse> {
+export const getTokens = async (code: string): Promise<SpotifyTokenResponse> => {
   const data = {
     grant_type: 'authorization_code',
     code,
@@ -72,4 +72,4 @@ export async function getTokens(code: string): Promise<SpotifyTokenResponse> {
   const response = await axios.post<SpotifyTokenResponse>('https://accounts.spotify.com/api/token', qs.stringify(data), { headers });
 
   return response.data;
-}
+};

@@ -8,7 +8,7 @@ dotenv.config();
 
 const router = express.Router();
 
-// redirect to OAuth upon login
+// redirect to Spotify OAuth upon login and redirect to dashboard after login
 router.get('/login', (req, res) => {
   const returnTo = req.query.returnTo || '/dashboard';
   const url = getAuthUrl(returnTo as string);
