@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import styles from './TopArtists.module.css';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchTopArtists } from '@/app/store/artistsSlice';
 
@@ -29,7 +28,7 @@ const TopArtists = () => {
   return (
     <div>
       <h1>Top Artists</h1>
-      <ol className={styles.artistList}>
+      <ol className="pt-4 pl-8">
         {medium_term.map((artist) => (
           <li key={artist.id}>{artist.name}</li>
         ))}

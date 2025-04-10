@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchTopTracks } from '@/app/store/topTracksSlice';
-import styles from './TopTracks.module.css';
 
 /**
  * TopTracks component
@@ -23,7 +22,7 @@ const TopTracks = () => {
   if (error) return <p>Error loading top tracks: {error}</p>;
 
   return (
-    <div className={styles.tracksContainer}>
+    <div className="pt-4">
       <h1>Top Tracks</h1>
 
       <ol>
