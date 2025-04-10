@@ -1,7 +1,5 @@
 'use client';
 
-import styles from './page.module.css';
-import sharedStyles from './styles/shared.module.css';
 import { useRouter } from 'next/navigation';
 
 const Home = () => {
@@ -14,10 +12,12 @@ const Home = () => {
   };
 
   return (
-    <main className={styles.container}>
-      <h1 className={styles.title}>🎧 Spotify User Metrics Dashboard</h1>
-      <p className={styles.description}>Analyze your top artists, genres, and tracks. Connect your Spotify account to get started.</p>
-      <button onClick={handleLogin} className={sharedStyles.button}>
+    <main className="min-h-screen p-8 flex flex-col items-center justify-center text-center">
+      <h1 className="text-5xl font-bold mb-4">🎧 Spotify User Metrics Dashboard</h1>
+      <p className="text-xl text-neutral-600 mb-8 max-w-xl">
+        Analyze your top artists, genres, and tracks. Connect your Spotify account to get started.
+      </p>
+      <button onClick={handleLogin} className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition">
         Connect your Spotify account
       </button>
     </main>

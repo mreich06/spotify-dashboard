@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setToken } from '../store/tokenSlice';
-import styles from './SpotifyDashboard.module.css';
-import sharedStyles from '../styles/shared.module.css';
 import TopArtists from '../components/TopArtists/TopArtists';
 import TopTracks from '../components/TopTracks/TopTracks';
 import Playlists from '../components/Playlists/Playlists';
@@ -58,18 +56,16 @@ const SpotifyDashboard = () => {
 
   if (!token) {
     return (
-      <div className={styles.tokenExpiredMsg}>
-        <h2 className={styles.loginHeader}>Session Expired</h2>
-        <p className={styles.loginMsg}>Please login again to continue</p>
-        <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`)} className={sharedStyles.button}>
-          Reconnect to Spotify
-        </button>
+      <div className="min-h-screen flex flex-col items-center justify-center text-center p-8">
+        <h2 className="pb-6 text-4xl font-bold">Session Expired</h2>
+        <p className="pb-6 text-[1.2rem] text-[#5a5a5a]">Please login again to continue</p>
+        <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`)}>Reconnect to Spotify</button>
       </div>
     );
   }
 
   return (
-    <div className={styles.dashboardContainer}>
+    <div className="p-8">
       <TopArtists />
       <TopTracks />
       <Playlists />
