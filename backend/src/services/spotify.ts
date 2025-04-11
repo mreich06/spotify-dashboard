@@ -5,9 +5,12 @@ import type { SpotifyTokenResponse } from '../../types/spotify';
 
 dotenv.config();
 
-const client_id = process.env.SPOTIFY_CLIENT_ID!;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET!;
-const redirect_uri = process.env.SPOTIFY_REDIRECT_URI!;
+const getSpotifyCredentials = () => {
+  const client_id = process.env.SPOTIFY_CLIENT_ID!;
+  const client_secret = process.env.SPOTIFY_CLIENT_SECRET!;
+  const redirect_uri = process.env.SPOTIFY_REDIRECT_URI!;
+  return { client_id, client_secret, redirect_uri };
+};
 
 /**
  * Builds the Spotify OAuth authorization URL.
@@ -22,6 +25,8 @@ const redirect_uri = process.env.SPOTIFY_REDIRECT_URI!;
  * - redirect_uri
  */
 export function getAuthUrl(returnTo: string): string {
+  const { client_id, redirect_uri } = getSpotifyCredentials();
+
   // data we are requesting from Spotify user profile
   const scope = [
     'user-top-read',
@@ -56,6 +61,8 @@ export function getAuthUrl(returnTo: string): string {
  * @returns object with access token, refresh token, expiry time
  */
 export const getTokens = async (code: string): Promise<SpotifyTokenResponse> => {
+  const { client_id, redirect_uri, client_secret } = getSpotifyCredentials();
+
   const data = {
     grant_type: 'authorization_code',
     code,
