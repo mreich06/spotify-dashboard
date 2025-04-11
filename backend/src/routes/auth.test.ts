@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../app';
 import * as spotifyService from '../services/spotify';
+import axios from 'axios';
 
 // Mock the whole spotify service
 jest.mock('../services/spotify');
@@ -48,11 +49,34 @@ describe('/callback', () => {
 });
 
 describe('/refresh', () => {
-  const spy = jest.spyOn(console, 'error').mockImplementation(() => {}); // suppress logs
+  it('should return 500 if Spotify returns an error', async () => {
+    jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Spotify API error'));
 
-  it('should return 400 if refresh token is missing', async () => {
-    const res = await request(app).post('/auth/refresh').send({});
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe('Missing refresh_token');
+    const res = await request(app).post('/auth/refresh').send({ refresh_token: 'invalid_token' });
+    expect(res.status).toBe(500);
+    expect(res.body.error).toBe('Failed to refresh token');
+  });
+
+  it('Should return a new access token if refresh_token is valid', async () => {
+    jest.spyOn(axios, 'post').mockResolvedValueOnce({
+      data: {
+        access_token: 'test_access_new',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      },
+    });
+    const res = await request(app).post('/auth/refresh').send({ refresh_token: 'valid_token' });
+    expect(res.status).toBe(200);
+    expect(res.body.access_token).toBe('test_access_new');
+    expect(res.body.token_type).toBe('Bearer');
+    expect(res.body.expires_in).toBe(3600);
+  });
+
+  it('Should return 500 error if Spotify gives an error', async () => {
+    jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Spotify error'));
+
+    const res = await request(app).post('/auth/refresh').send({ refresh_token: 'invalid_token' });
+    expect(res.status).toBe(500);
+    expect(res.body.error).toBe('Failed to refresh token');
   });
 });
