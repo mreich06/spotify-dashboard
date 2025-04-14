@@ -49,7 +49,13 @@ describe('/callback', () => {
 });
 
 describe('/refresh', () => {
-  it('should return 500 if Spotify returns an error', async () => {
+  it('should return 400 if refresh_token is missing', async () => {
+    const res = await request(app).post('/auth/refresh').send({});
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Missing refresh_token');
+  });
+
+  it('should return 500 if axios POST request returns an error', async () => {
     jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Spotify API error'));
 
     const res = await request(app).post('/auth/refresh').send({ refresh_token: 'invalid_token' });
