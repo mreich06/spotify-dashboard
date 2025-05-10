@@ -75,8 +75,8 @@ const GenreEvolution = () => {
   // get genres of top artists for short, medium and long term
   const { shortTermGenres, mediumTermGenres, longTermGenres } = getGenreCountsByTimeRange(artists);
 
-  for (const [key, value] of Object.entries(shortTermGenres)) {
-    console.log(key, value);
+  if (!artists?.short_term || !artists?.medium_term || !artists?.long_term) {
+    return <p>No artist data available.</p>;
   }
   return <div></div>;
 };
