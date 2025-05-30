@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { SpotifyArtist, SpotifyTopArtistsResponse } from '../types/spotify';
 import { createApiThunk } from '../utils/createApiThunk';
-interface ArtistsState {
+export interface ArtistsState {
   artists: {
     short_term: SpotifyArtist[];
     medium_term: SpotifyArtist[];
