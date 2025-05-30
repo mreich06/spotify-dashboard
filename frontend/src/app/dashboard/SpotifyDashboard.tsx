@@ -7,6 +7,7 @@ import TopArtists from '../components/TopArtists/TopArtists';
 import TopTracks from '../components/TopTracks/TopTracks';
 import Playlists from '../components/Playlists/Playlists';
 import GenreEvolution from '../components/GenreEvolution/GenreEvolution';
+import SummaryCards from '../components/SummaryCards/SummaryCards';
 /**
  * SpotifyDashboard client component - main app component
  *
@@ -64,7 +65,8 @@ const SpotifyDashboard = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-black">
+      <SummaryCards />
       <TopArtists />
       <TopTracks />
       <Playlists />
