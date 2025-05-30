@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { SpotifyPlaylistsResponse } from '../types/spotify';
 import { createApiThunk } from '../utils/createApiThunk';
 
-interface PlaylistsState {
+export interface PlaylistsState {
   playlists: SpotifyPlaylistsResponse;
   loading: boolean;
   error: string | null;
