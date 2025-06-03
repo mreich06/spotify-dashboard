@@ -1,26 +1,19 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setToken } from '../store/tokenSlice';
-import TopArtists from '../components/TopArtists/TopArtists';
-import TopTracks from '../components/TopTracks/TopTracks';
-import Playlists from '../components/Playlists/Playlists';
-import GenreEvolution from '../components/GenreEvolution/GenreEvolution';
+
+import Sidebar from '../components/Sidebar/Sidebar';
 import SummaryCards from '../components/SummaryCards/SummaryCards';
-/**
- * SpotifyDashboard client component - main app component
- *
- * Handles the post-login flow by getting the Spotify access token from the URL
- * or localStorage if it exists. Then store it in local state and remove token from the URL
- *
- * 1. Extract token from the URL query string after OAuth redirect
- * 2. Stores token in localStorage for later
- * 3. Update state to trigger a re-render
- * 4. Cleans up  URL using Next.js router
- * 5. Displays Spotify metrics data by getting data from Redux
- *
- */
+import TopGenres from '../components/TopGenres/TopGenres';
+import TopTracksBarChart from '../components/TopTracks/TopTracksBarChart';
+import TopArtistsDetails from '../components/TopArtistsDetails/TopArtistsDetails';
+import ListeningActivityChart from '../components/ListeningActivityChart/ListeningActivityChart';
+import TopPlaylists from '../components/TopPlaylists/TopPlaylists';
+import MostStreamedTrack from '../components/MostStreamedTrack/MostStreamedTrack';
+
 const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -29,8 +22,6 @@ const SpotifyDashboard = () => {
   const token = useAppSelector((state) => state.token.accessToken);
   const [tokenLoading, setTokenLoading] = useState(true);
 
-  // Get token from URL or localStorage and store in Redux
-  // refresh token stored in localStorage for interceptor to access
   useEffect(() => {
     const accessToken = searchParams.get('access_token');
     const refreshToken = searchParams.get('refresh_token');
@@ -59,18 +50,61 @@ const SpotifyDashboard = () => {
       <div className="min-h-screen flex flex-col items-center justify-center text-center p-8">
         <h2 className="pb-6 text-4xl font-bold">Session Expired</h2>
         <p className="pb-6 text-[1.2rem] text-[#5a5a5a]">Please login again to continue</p>
-        <button onClick={() => router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`)}>Reconnect to Spotify</button>
+        <button className="px-4 py-2 bg-green-600 rounded" onClick={() => router.push(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`)}>
+          Reconnect to Spotify
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="p-8 bg-black">
-      <SummaryCards />
-      <TopArtists />
-      <TopTracks />
-      <Playlists />
-      <GenreEvolution />
+    <div className="flex">
+      <Sidebar />
+
+      <main className="flex-1 min-h-screen bg-black text-white px-6 py-8 transition-all duration-300 ease-in-out">
+        <div className="flex justify-between items-start mb-6 px-4 flex-wrap sm:flex-nowrap">
+          <div>
+            <h1 className="text-3xl font-bold text-green-400">Maya's Spotify Dashboard</h1>
+            <p className="text-sm text-white/80 mt-1">Discover your top tracks, playlists, genres and artists over time.</p>
+          </div>
+
+          <div className="mt-4 sm:mt-0 flex items-center justify-center bg-[#1c2b24] rounded-full p-1">
+            {['2022', '2023', '2024'].map((year) => (
+              <button
+                key={year}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  year === '2024' ? 'bg-green-500 text-black' : 'text-white/80 hover:text-white'
+                }`}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 auto-rows-min">
+          <div className="col-span-full md:col-span-4 lg:col-span-3 space-y-6">
+            <SummaryCards />
+            <TopGenres />
+            <TopPlaylists />
+          </div>
+
+          <div className="col-span-full md:col-span-4 lg:col-span-1 lg:row-span-1 lg:row-start-1 lg:col-start-4">
+            <MostStreamedTrack />
+          </div>
+
+          <div className="col-span-full md:col-span-4 lg:col-span-2">
+            <TopTracksBarChart />
+          </div>
+          <div className="md:col-span-4 lg:col-span-2">
+            <TopArtistsDetails />
+          </div>
+
+          <div className="md:col-span-4 lg:col-span-4">
+            <ListeningActivityChart />
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
