@@ -36,7 +36,7 @@ const playlists: Playlist[] = [
   },
 ];
 
-export default function TopPlaylists() {
+const TopPlaylists = () => {
   return (
     <GlassCard>
       <h2 className="text-lg font-semibold text-green-400 mb-4">Your Top Playlists</h2>
@@ -50,4 +50,6 @@ export default function TopPlaylists() {
       </ul>
     </GlassCard>
   );
-}
+};
+
+export default TopPlaylists;
