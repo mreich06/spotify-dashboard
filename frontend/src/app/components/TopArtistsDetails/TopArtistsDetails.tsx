@@ -1,5 +1,7 @@
 'use client';
 
+import GlassCard from '../GlassCard/GlassCard';
+
 type Artist = {
   id: string;
   name: string;
@@ -66,9 +68,8 @@ const topArtists: Artist[] = [
 
 const TopArtistsDetails = () => {
   return (
-    <div className="bg-[#0f1d17] rounded-xl p-4 text-white w-full">
+    <GlassCard>
       <h2 className="text-lg font-semibold text-green-400 mb-4">Top Artists (Details)</h2>
-
       <div className="overflow-x-auto">
         <table className="table-auto w-full text-left text-sm">
           <thead className="text-green-300 border-b border-green-700">
@@ -98,7 +99,7 @@ const TopArtistsDetails = () => {
           </tbody>
         </table>
       </div>
-    </div>
+    </GlassCard>
   );
 };
 

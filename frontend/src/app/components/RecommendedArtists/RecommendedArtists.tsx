@@ -1,5 +1,8 @@
 'use client';
 
+import { Card, CardContent } from '@/components/ui/card';
+import GlassCard from '../GlassCard/GlassCard';
+
 type Artist = {
   id: string;
   name: string;
@@ -36,17 +39,19 @@ const recommended: Artist[] = [
 
 const RecommendedArtists = () => {
   return (
-    <div className="bg-[#0f1d17] rounded-xl p-4 h-full text-white">
-      <h2 className="text-lg font-semibold text-green-400 mb-4">Recommended Artists</h2>
-      <ul className="space-y-4">
-        {recommended.map((artist) => (
-          <li key={artist.id} className="flex items-center gap-4">
-            <img src={artist.imageUrl} alt={artist.name} className="w-12 h-12 rounded-full object-cover" />
-            <span className="text-md">{artist.name}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <GlassCard>
+      <CardContent className="p-4">
+        <h2 className="text-lg font-semibold text-green-400 mb-4">Recommended Artists</h2>
+        <ul className="space-y-4">
+          {recommended.map((artist) => (
+            <li key={artist.id} className="flex items-center gap-4">
+              <img src={artist.imageUrl} alt={artist.name} className="w-12 h-12 rounded-full object-cover border border-green-700/40 shadow-sm" />
+              <span className="text-md text-white">{artist.name}</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </GlassCard>
   );
 };
 

@@ -62,38 +62,48 @@ const SpotifyDashboard = () => {
       <Sidebar />
 
       <main className="flex-1 min-h-screen bg-black text-white px-6 py-8 transition-all duration-300 ease-in-out">
-        <h1 className="text-3xl font-bold text-green-400 text-center mb-8">Maya's Spotify Dashboard</h1>
+        <h1 className="text-3xl font-bold text-green-400 text-start mb-8">Maya's Spotify Dashboard</h1>
 
-        <div className="grid grid-cols-5 gap-6 auto-rows-min">
-          {/* Summary Cards (4 columns) */}
-          <div className="col-span-4">
+        <div className="relative rounded-2xl p-[1px] overflow-hidden">
+          {/* Gradient border using before */}
+          <div className="absolute inset-0 z-0 before:absolute before:inset-0 before:bg-[conic-gradient(from_225deg,_rgba(34,197,94,0.3),_transparent_70%)] before:rounded-2xl before:blur-md" />
+
+          {/* Card content */}
+        </div>
+        <h2 className="text-lg font-semibold text-green-300">Your Personalized Spotify Listening Insights</h2>
+        <p className="text-sm text-white/70 mt-2">Elevate your brand with a golden tick and connect with top-tier associates.</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {/* Summary Cards */}
+          <div className="lg:col-span-4 sm:col-span-2 col-span-1">
             <SummaryCards />
           </div>
 
-          {/* Recommended Artists (spans 2 rows next to summary + playlists) */}
-          <div className="row-span-2 col-span-1">
-            <RecommendedArtists />
-          </div>
-
-          {/* Row below cards: Pie + Playlists + Listening Activity */}
-          <div className="col-span-1">
+          {/* Your Top Genres spans full width below cards */}
+          <div className="col-span-1 sm:col-span-2 lg:col-span-5">
             <TopGenres />
           </div>
 
-          <div className="col-span-1">
+          {/* Below genres: Recommended left, TopPlaylists right */}
+          <div className="sm:col-span-2 col-span-1">
+            <RecommendedArtists />
+          </div>
+
+          <div className="sm:col-span-2 col-span-1">
             <TopPlaylists />
           </div>
 
-          <div className="col-span-2">
+          {/* Listening Activity */}
+          <div className="col-span-1 sm:col-span-2 lg:col-span-5">
             <ListeningActivityChart />
           </div>
 
-          {/* Bottom row: Bar chart + Top Artists */}
-          <div className="col-span-2">
+          {/* Bottom Row */}
+          <div className="lg:col-span-2 sm:col-span-2 col-span-1">
             <TopTracksBarChart />
           </div>
 
-          <div className="col-span-3">
+          <div className="lg:col-span-3 sm:col-span-2 col-span-1">
             <TopArtistsDetails />
           </div>
         </div>

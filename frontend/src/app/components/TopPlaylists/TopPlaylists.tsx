@@ -1,5 +1,7 @@
 'use client';
 
+import GlassCard from '../GlassCard/GlassCard';
+
 type Playlist = {
   id: string;
   name: string;
@@ -36,7 +38,7 @@ const playlists: Playlist[] = [
 
 export default function TopPlaylists() {
   return (
-    <div className="bg-[#0f1d17] rounded-xl p-4 text-white">
+    <GlassCard>
       <h2 className="text-lg font-semibold text-green-400 mb-4">Your Top Playlists</h2>
       <ul className="space-y-3">
         {playlists.map((playlist) => (
@@ -46,6 +48,6 @@ export default function TopPlaylists() {
           </li>
         ))}
       </ul>
-    </div>
+    </GlassCard>
   );
 }

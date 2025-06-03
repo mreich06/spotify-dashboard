@@ -8,7 +8,7 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
-    <div className={`bg-[#0d1512] text-white transition-all duration-300 ease-in-out h-screen ${collapsed ? 'w-16' : 'w-48'} flex flex-col`}>
+    <div className={`bg-[#0d1512] text-white transition-all duration-300 ease-in-out min-h-screen ${collapsed ? 'w-16' : 'w-48'} flex flex-col`}>
       {/* Toggle */}
       <button onClick={() => setCollapsed(!collapsed)} className="p-4 hover:bg-[#1a2a21] transition">
         <Menu className="w-5 h-5" />
