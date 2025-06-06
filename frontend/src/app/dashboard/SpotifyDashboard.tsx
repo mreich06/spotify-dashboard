@@ -64,7 +64,7 @@ const SpotifyDashboard = () => {
       <Sidebar />
 
       <main className="flex-1 min-h-screen bg-black text-white px-6 py-8 transition-all duration-300 ease-in-out">
-        <div className="flex justify-between items-start mb-6 px-4 flex-wrap sm:flex-nowrap">
+        <div className="flex justify-between items-start mb-6 px-4 flex-wrap sm:flex-nowrap mt-3">
           <Header />
           <YearSelectorTabs />
         </div>
