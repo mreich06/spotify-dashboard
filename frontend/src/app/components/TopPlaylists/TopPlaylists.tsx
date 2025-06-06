@@ -1,5 +1,6 @@
 'use client';
 
+import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
 import GlassCard from '../GlassCard/GlassCard';
 
 type Playlist = {
@@ -38,17 +39,19 @@ const playlists: Playlist[] = [
 
 const TopPlaylists = () => {
   return (
-    <GlassCard>
-      <h2 className="text-lg font-semibold text-green-400 mb-4">Your Top Playlists</h2>
-      <ul className="space-y-3">
-        {playlists.map((playlist) => (
-          <li key={playlist.id} className="flex items-center gap-4">
-            <img src={playlist.imageUrl} alt={playlist.name} className="w-12 h-12 rounded object-cover" />
-            <span className="text-md">{playlist.name}</span>
-          </li>
-        ))}
-      </ul>
-    </GlassCard>
+    <FadeInWhenVisible order="fourth">
+      <GlassCard>
+        <h2 className="text-lg font-semibold text-green-400 mb-4">Your Top Playlists</h2>
+        <ul className="space-y-3">
+          {playlists.map((playlist) => (
+            <li key={playlist.id} className="flex items-center gap-4">
+              <img src={playlist.imageUrl} alt={playlist.name} className="w-12 h-12 rounded object-cover" />
+              <span className="text-md">{playlist.name}</span>
+            </li>
+          ))}
+        </ul>
+      </GlassCard>
+    </FadeInWhenVisible>
   );
 };
 
