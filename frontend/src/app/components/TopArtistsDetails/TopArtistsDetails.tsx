@@ -1,5 +1,6 @@
 'use client';
 
+import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
 import GlassCard from '../GlassCard/GlassCard';
 
 type Artist = {
@@ -68,38 +69,40 @@ const topArtists: Artist[] = [
 
 const TopArtistsDetails = () => {
   return (
-    <GlassCard>
-      <h2 className="text-lg font-semibold text-green-400 mb-4">Top Artists (Details)</h2>
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full text-left text-sm">
-          <thead className="text-green-300 border-b border-green-700">
-            <tr>
-              <th className="py-2 pr-4">Artist</th>
-              <th className="py-2 pr-4">Genres</th>
-              <th className="py-2 pr-4">Top Track</th>
-              <th className="py-2 pr-4">Popularity</th>
-              <th className="py-2">Followers</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topArtists.map((artist) => (
-              <tr key={artist.id} className="border-b border-[#1a2a21]">
-                <td className="py-2 pr-4 flex items-center gap-3">
-                  <img src={artist.imageUrl} alt={artist.name} className="w-8 h-8 rounded-full object-cover" />
-                  <a href={artist.spotifyUrl} target="_blank" rel="noopener noreferrer" className="text-green-300 hover:underline">
-                    {artist.name}
-                  </a>
-                </td>
-                <td className="py-2 pr-4">{artist.genres.slice(0, 3).join(', ')}</td>
-                <td className="py-2 pr-4">{artist.topTrack}</td>
-                <td className="py-2 pr-4">{artist.popularity}</td>
-                <td className="py-2">{artist.followers.toLocaleString()}</td>
+    <FadeInWhenVisible order="fifth">
+      <GlassCard>
+        <h2 className="text-lg font-semibold text-green-400 mb-4">Top Artists (Details)</h2>
+        <div className="overflow-x-auto">
+          <table className="table-auto w-full text-left text-sm">
+            <thead className="text-green-300 border-b border-green-700">
+              <tr>
+                <th className="py-2 pr-4">Artist</th>
+                <th className="py-2 pr-4">Genres</th>
+                <th className="py-2 pr-4">Top Track</th>
+                <th className="py-2 pr-4">Popularity</th>
+                <th className="py-2">Followers</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </GlassCard>
+            </thead>
+            <tbody>
+              {topArtists.map((artist) => (
+                <tr key={artist.id} className="border-b border-[#1a2a21]">
+                  <td className="py-2 pr-4 flex items-center gap-3">
+                    <img src={artist.imageUrl} alt={artist.name} className="w-8 h-8 rounded-full object-cover" />
+                    <a href={artist.spotifyUrl} target="_blank" rel="noopener noreferrer" className="text-green-300 hover:underline">
+                      {artist.name}
+                    </a>
+                  </td>
+                  <td className="py-2 pr-4">{artist.genres.slice(0, 3).join(', ')}</td>
+                  <td className="py-2 pr-4">{artist.topTrack}</td>
+                  <td className="py-2 pr-4">{artist.popularity}</td>
+                  <td className="py-2">{artist.followers.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </GlassCard>
+    </FadeInWhenVisible>
   );
 };
 

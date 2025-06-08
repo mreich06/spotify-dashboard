@@ -4,8 +4,10 @@ import './globals.css';
 import Providers from './Providers';
 import { Inter } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] });
-
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400'],
+});
 export const metadata: Metadata = {
   title: 'Spotify Dashboard',
   description: 'Visualize your Spotify listening history',

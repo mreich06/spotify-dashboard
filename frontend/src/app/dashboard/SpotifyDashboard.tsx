@@ -13,11 +13,14 @@ import TopArtistsDetails from '../components/TopArtistsDetails/TopArtistsDetails
 import ListeningActivityChart from '../components/ListeningActivityChart/ListeningActivityChart';
 import TopPlaylists from '../components/TopPlaylists/TopPlaylists';
 import MostStreamedTrack from '../components/MostStreamedTrack/MostStreamedTrack';
+import YearSelectorTabs from '../components/YearSelectorTabs/YearSelectorTabs';
+import Header from '../components/Header/Header';
 
 const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+  const [selectedRange, setSelectedRange] = useState('long_term');
 
   const token = useAppSelector((state) => state.token.accessToken);
   const [tokenLoading, setTokenLoading] = useState(true);
@@ -62,29 +65,14 @@ const SpotifyDashboard = () => {
       <Sidebar />
 
       <main className="flex-1 min-h-screen bg-black text-white px-6 py-8 transition-all duration-300 ease-in-out">
-        <div className="flex justify-between items-start mb-6 px-4 flex-wrap sm:flex-nowrap">
-          <div>
-            <h1 className="text-3xl font-bold text-green-400">Maya's Spotify Dashboard</h1>
-            <p className="text-sm text-white/80 mt-1">Discover your top tracks, playlists, genres and artists over time.</p>
-          </div>
-
-          <div className="mt-4 sm:mt-0 flex items-center justify-center bg-[#1c2b24] rounded-full p-1">
-            {['2022', '2023', '2024'].map((year) => (
-              <button
-                key={year}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  year === '2024' ? 'bg-green-500 text-black' : 'text-white/80 hover:text-white'
-                }`}
-              >
-                {year}
-              </button>
-            ))}
-          </div>
+        <div className="flex justify-between items-start mb-6 px-4 flex-wrap sm:flex-nowrap mt-3">
+          <Header />
+          <YearSelectorTabs selectedRange={selectedRange} onChange={setSelectedRange} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 auto-rows-min">
           <div className="col-span-full md:col-span-4 lg:col-span-3 space-y-6">
-            <SummaryCards />
+            <SummaryCards timeRange={selectedRange} />
             <TopGenres />
             <TopPlaylists />
           </div>
