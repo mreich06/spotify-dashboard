@@ -20,6 +20,7 @@ const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+  const [selectedRange, setSelectedRange] = useState('long_term');
 
   const token = useAppSelector((state) => state.token.accessToken);
   const [tokenLoading, setTokenLoading] = useState(true);
@@ -66,12 +67,12 @@ const SpotifyDashboard = () => {
       <main className="flex-1 min-h-screen bg-black text-white px-6 py-8 transition-all duration-300 ease-in-out">
         <div className="flex justify-between items-start mb-6 px-4 flex-wrap sm:flex-nowrap mt-3">
           <Header />
-          <YearSelectorTabs />
+          <YearSelectorTabs selectedRange={selectedRange} onChange={setSelectedRange} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 auto-rows-min">
           <div className="col-span-full md:col-span-4 lg:col-span-3 space-y-6">
-            <SummaryCards />
+            <SummaryCards timeRange={selectedRange} />
             <TopGenres />
             <TopPlaylists />
           </div>
