@@ -3,6 +3,8 @@ import tokenReducer from './tokenSlice';
 import artistsReducer from './artistsSlice';
 import topTracksReducer from './topTracksSlice';
 import playlistsReducer from './playlistsSlice';
+import summaryStatsReducer from './summarySlice';
+import timeRangeReducer from './timeRangeSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +12,8 @@ export const store = configureStore({
     artists: artistsReducer,
     topTracks: topTracksReducer,
     playlists: playlistsReducer,
+    summaryStats: summaryStatsReducer,
+    timeRange: timeRangeReducer,
   },
 });
 

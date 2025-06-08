@@ -13,14 +13,15 @@ import TopArtistsDetails from '../components/TopArtistsDetails/TopArtistsDetails
 import ListeningActivityChart from '../components/ListeningActivityChart/ListeningActivityChart';
 import TopPlaylists from '../components/TopPlaylists/TopPlaylists';
 import MostStreamedTrack from '../components/MostStreamedTrack/MostStreamedTrack';
-import YearSelectorTabs from '../components/YearSelectorTabs/YearSelectorTabs';
+import TimeRangeSelectorTabs from '../components/TimeRangeSelectorTabs/TimeRangeSelectorTabs';
 import Header from '../components/Header/Header';
+import { TimeRange } from '../types/spotify';
 
 const SpotifyDashboard = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
-  const [selectedRange, setSelectedRange] = useState('long_term');
+  const [selectedRange, setSelectedRange] = useState<TimeRange>('long_term');
 
   const token = useAppSelector((state) => state.token.accessToken);
   const [tokenLoading, setTokenLoading] = useState(true);
@@ -67,7 +68,7 @@ const SpotifyDashboard = () => {
       <main className="flex-1 min-h-screen bg-black text-white px-6 py-8 transition-all duration-300 ease-in-out">
         <div className="flex justify-between items-start mb-6 px-4 flex-wrap sm:flex-nowrap mt-3">
           <Header />
-          <YearSelectorTabs selectedRange={selectedRange} onChange={setSelectedRange} />
+          <TimeRangeSelectorTabs selectedRange={selectedRange} onChange={setSelectedRange} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 auto-rows-min">

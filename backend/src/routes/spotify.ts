@@ -2,6 +2,7 @@ import express from 'express';
 import { fetchSpotifyData } from '../utils/spotifyRequest';
 import type { SpotifyTopArtistsResponse, SpotifyTopTracksResponse, SpotifyPlaylistsResponse } from '../../types/spotify';
 import type { Request, Response } from 'express';
+import { fetchSummaryStats } from '../utils/summaryStats';
 
 const router = express.Router();
 
@@ -20,5 +21,8 @@ router.get('/top-tracks', async (req: Request, res: Response) => {
 router.get('/playlists', async (req: Request, res: Response) => {
   fetchSpotifyData<SpotifyPlaylistsResponse>('me/playlists', req, res);
 });
+
+// GET endpoint for summmary stats data from spotify
+router.get('/summary-stats', fetchSummaryStats);
 
 export default router;
