@@ -3,11 +3,17 @@ import { createApiThunk } from '../utils/createApiThunk';
 
 type SummaryRange = 'short_term' | 'medium_term' | 'long_term';
 
+export interface GenreStat {
+  name: string;
+  count: number;
+}
+
 export interface SummaryStats {
   totalTracks: number;
   totalMinutes: string;
   avgMinutesPerDay: number;
   avgPlaysPerDay: number;
+  genres: GenreStat[];
 }
 
 export interface SummaryStatsState {
