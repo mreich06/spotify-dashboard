@@ -21,7 +21,7 @@ const TopPlaylists = () => {
       <GlassCard>
         <h2 className="text-lg font-semibold text-green-400 mb-4">Your Top Playlists</h2>
         <ul className="space-y-3">
-          {playlists.items.slice(0, 10).map((playlist) => (
+          {playlists.items.slice(0, 5).map((playlist) => (
             <li key={playlist.id} className="flex items-center gap-4">
               {playlist.images?.[0]?.url && <img src={playlist.images[0].url} alt={playlist.name} className="w-12 h-12 rounded object-cover" />}
               <span className="text-md">{playlist.name}</span>

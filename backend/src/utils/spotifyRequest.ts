@@ -1,7 +1,9 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
 
-export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: Response): Promise<void> => {
+type Handler<T> = (data: T, req: Request, res: Response) => Promise<void>;
+
+export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: Response, customHandler?: Handler<T>): Promise<void> => {
   const token = req.headers.authorization?.replace('Bearer ', '');
 
   if (!token) {
@@ -15,7 +17,12 @@ export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: R
         Authorization: `Bearer ${token}`,
       },
     });
-    res.json(response.data);
+
+    if (customHandler) {
+      await customHandler(response.data, req, res);
+    } else {
+      res.json(response.data);
+    }
   } catch (error) {
     console.error(`Error fetching ${endpoint}:`, error);
     res.status(500).json({ error: `Failed to fetch ${endpoint}` });

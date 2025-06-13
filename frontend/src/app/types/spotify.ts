@@ -51,3 +51,31 @@ export interface SpotifyPlaylist {
   };
 }
 export type TimeRange = 'short_term' | 'medium_term' | 'long_term';
+
+export interface SpotifyImage {
+  url: string;
+  height: number;
+  width: number;
+}
+
+export interface SpotifyTrack {
+  album: {
+    album_type: string;
+    total_tracks: number;
+    available_markets: string[];
+    images: SpotifyImage[];
+    name: string;
+  };
+  artists: { id: string; name: string }[];
+  external_urls: { spotify: string };
+  id: string;
+  genres: string[];
+  images: SpotifyImage[];
+  name: string;
+  duration_ms: number;
+  popularity: number;
+}
+
+export interface SpotifyTrackResponse {
+  items: SpotifyTrack[];
+}

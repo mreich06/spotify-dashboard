@@ -49,6 +49,7 @@ export interface SpotifyTrack {
     album_type: string;
     total_tracks: number;
     available_markets: string[];
+    name: string;
   };
   external_urls: { spotify: string };
   id: string;
@@ -56,6 +57,8 @@ export interface SpotifyTrack {
   images: SpotifyImage[];
   name: string;
   duration_ms: number;
+  artists: { id: string; name: string }[];
+  popularity: number;
 }
 
 export interface SpotifyTopTracksResponse {
@@ -75,4 +78,8 @@ export interface SpotifyTokenResponse {
 
   expires_in: number;
   scope: string;
+}
+
+export interface SpotifyTrackResponse {
+  items: SpotifyTrack[];
 }

@@ -5,6 +5,7 @@ import topTracksReducer from './topTracksSlice';
 import playlistsReducer from './playlistsSlice';
 import summaryStatsReducer from './summarySlice';
 import timeRangeReducer from './timeRangeSlice';
+import MostStreamedTrackReducer from './mostStreamedTrackSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     playlists: playlistsReducer,
     summaryStats: summaryStatsReducer,
     timeRange: timeRangeReducer,
+    mostStreamedTrack: MostStreamedTrackReducer,
   },
 });
 
