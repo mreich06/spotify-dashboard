@@ -10,17 +10,15 @@ export interface SpotifyArtist {
   genres: string[];
   images: SpotifyImage[];
   popularity: number;
-  uri: string;
+  followers: {
+    total: number;
+  };
+  external_urls: {
+    spotify: string;
+  };
 }
-
 export interface SpotifyTopArtistsResponse {
   items: SpotifyArtist[];
-  total: number;
-  limit: number;
-  offset: number;
-  href: string;
-  previous: string | null;
-  next: string | null;
 }
 
 export interface SpotifyTopTracksResponse {
@@ -78,4 +76,14 @@ export interface SpotifyTrack {
 
 export interface SpotifyTrackResponse {
   items: SpotifyTrack[];
+}
+
+export interface GenreTrendMap {
+  [genre: string]: number;
+}
+
+export interface GenreTrendsResponse {
+  short_term: GenreTrendMap;
+  medium_term: GenreTrendMap;
+  long_term: GenreTrendMap;
 }

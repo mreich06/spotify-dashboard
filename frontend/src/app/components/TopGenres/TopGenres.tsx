@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import GlassCard from '../GlassCard/GlassCard';
 import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
 import { useAppSelector } from '@/app/store/hooks';
+import { capitalizeFirstLetter } from '@/lib/utils';
 
 const COLORS = ['#22c55e', '#16a34a', '#15803d', '#0f766e', '#064e3b'];
 
@@ -39,7 +40,7 @@ const TopGenres = () => {
                     cy="50%"
                     outerRadius={80}
                     labelLine={false}
-                    label={({ genre }) => genre}
+                    label={({ genre }) => capitalizeFirstLetter(genre)}
                   >
                     {chartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -54,7 +55,7 @@ const TopGenres = () => {
             <div className="w-full md:w-1/2 mt-6 md:mt-0 md:pl-6 space-y-2">
               {chartData.map((entry, index) => (
                 <div key={index} className="flex justify-between border-b border-[#1f2f23] pb-1">
-                  <span className="text-sm text-green-300">{entry.genre}</span>
+                  <span className="text-sm text-green-300">{capitalizeFirstLetter(entry.genre)}</span>
                   <span className="text-sm text-white font-semibold">{entry.value}%</span>
                 </div>
               ))}

@@ -75,4 +75,50 @@ router.get('/most-streamed-track', async (req: Request, res: Response) => {
   });
 });
 
+router.get('/top-genres-over-time', async (req, res) => {
+  await fetchSpotifyData<any>('me/top/tracks?time_range=long_term&limit=1', req, res, async (_, req, res) => {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      res.status(401).json({ error: 'Missing token' });
+      return;
+    }
+
+    const timeRanges = ['short_term', 'medium_term', 'long_term'];
+    const results: Record<string, Record<string, number>> = {};
+
+    try {
+      for (const range of timeRanges) {
+        const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { time_range: range, limit: 50 },
+        });
+
+        const tracks = response.data.items;
+        const genreCounts: Record<string, number> = {};
+
+        for (const track of tracks) {
+          const artistId = track.artists?.[0]?.id;
+          if (!artistId) continue;
+
+          const artistResponse = await axios.get(`https://api.spotify.com/v1/artists/${artistId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const genres: string[] = artistResponse.data.genres || [];
+          for (const genre of genres) {
+            genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+          }
+        }
+
+        results[range] = genreCounts;
+      }
+
+      res.json(results);
+    } catch (error) {
+      console.error('Error fetching genre trends:', error);
+      res.status(500).json({ error: 'Failed to fetch genre trends' });
+    }
+  });
+});
+
 export default router;
