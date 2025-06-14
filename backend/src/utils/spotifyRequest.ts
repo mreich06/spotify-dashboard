@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
+import { TimeRange } from '../../types/spotify';
 
 type Handler<T> = (data: T, req: Request, res: Response) => Promise<void>;
 
@@ -61,3 +62,17 @@ export const batchFetchArtists = async (artistIds: string[], token: string): Pro
   }
   return batches;
 };
+
+export const getAccessToken = (req: any) => {
+  return req.headers.authorization?.replace('Bearer ', '');
+};
+
+export const createEmptyTimeRangeResult = <T>(defaultValue: T): Record<TimeRange, T> => {
+  return {
+    short_term: defaultValue,
+    medium_term: defaultValue,
+    long_term: defaultValue,
+  };
+};
+
+export const timeRanges: TimeRange[] = ['short_term', 'medium_term', 'long_term'];
