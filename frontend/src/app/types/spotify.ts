@@ -87,3 +87,9 @@ export interface GenreTrendsResponse {
   medium_term: GenreTrendMap;
   long_term: GenreTrendMap;
 }
+
+export interface CardProps {
+  timeRange: 'short_term' | 'medium_term' | 'long_term';
+}
+
+export type MostStreamedTrackResponse = Record<TimeRange, SpotifyTrackResponse>;

@@ -11,6 +11,7 @@ export const msToMinutesAndSeconds = (ms: number) => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
-export const capitalizeFirstLetter = (str: string): string => {
+export const capitalizeFirstLetter = (str?: string): string => {
+  if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 };

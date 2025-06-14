@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createApiThunk } from '../utils/createApiThunk';
-import { SpotifyTrackResponse } from '../types/spotify';
+import { MostStreamedTrackResponse } from '../types/spotify';
 
-export const fetchMostStreamedTrack = createApiThunk<SpotifyTrackResponse>('/tracks/fetchMostStreamedTrack', '/most-streamed-track');
+export const fetchMostStreamedTrack = createApiThunk<MostStreamedTrackResponse>('/tracks/fetchMostStreamedTrack', '/most-streamed-track');
 
 interface MostStreamedTrackState {
-  track: SpotifyTrackResponse | null;
+  track: MostStreamedTrackResponse | null;
   loading: boolean;
   error: string | null;
 }
@@ -29,6 +29,7 @@ const mostStreamedTrackSlice = createSlice({
       .addCase(fetchMostStreamedTrack.fulfilled, (state, action) => {
         state.loading = false;
         state.track = action.payload;
+        console.log('action.payload', action.payload);
       })
       .addCase(fetchMostStreamedTrack.rejected, (state, action) => {
         state.loading = false;

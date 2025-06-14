@@ -83,3 +83,5 @@ export interface SpotifyTokenResponse {
 export interface SpotifyTrackResponse {
   items: SpotifyTrack[];
 }
+
+export type TimeRange = 'short_term' | 'medium_term' | 'long_term';
