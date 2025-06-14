@@ -31,7 +31,7 @@ export interface SpotifyTopTracksResponse {
   items: SpotifyArtist[];
 }
 
-export interface SpotifyPlaylistsResponse {
+export interface SpotifyPlaylists {
   href: string;
   limit: number;
   total: number;
@@ -93,3 +93,5 @@ export interface CardProps {
 }
 
 export type MostStreamedTrackResponse = Record<TimeRange, SpotifyTrackResponse>;
+
+export type SpotifyPlaylistsResponse = Record<TimeRange, SpotifyPlaylists>;

@@ -1,6 +1,6 @@
 import express from 'express';
 import axios from 'axios';
-import { fetchSpotifyData } from '../utils/spotifyRequest';
+import { createEmptyTimeRangeResult, fetchSpotifyData, getAccessToken, timeRanges } from '../utils/spotifyRequest';
 import { fetchSummaryStats } from '../utils/summaryStats';
 import type {
   SpotifyTopArtistsResponse,
@@ -22,27 +22,49 @@ const router = express.Router();
 //   fetchSpotifyData<SpotifyTopTracksResponse>('me/top/tracks', req, res);
 // });
 
-// router.get('/playlists', async (req: Request, res: Response) => {
-//   fetchSpotifyData<SpotifyPlaylistsResponse>('me/playlists', req, res);
-// });
+router.get('/top-playlists', async (req: Request, res: Response): Promise<void> => {
+  const token = getAccessToken(req);
+  if (!token) {
+    res.status(401).json({ error: 'Access token is missing' });
+    return;
+  }
+  const result = createEmptyTimeRangeResult<SpotifyPlaylistsResponse>({
+    href: '',
+    limit: 0,
+    total: 0,
+    items: [],
+  });
+
+  try {
+    for (const range of timeRanges) {
+      const response = await axios.get('https://api.spotify.com/v1/me/playlists', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 10 },
+      });
+
+      // Just reuse the same response for all ranges (since Spotify playlists API doesn’t support time_range)
+      result[range] = response.data;
+    }
+
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching top playlists:', err);
+    res.status(500).json({ error: 'Failed to fetch playlists' });
+  }
+});
 
 // router.get('/summary-stats', fetchSummaryStats);
 
 router.get('/most-streamed-track', async (req: Request, res: Response): Promise<void> => {
-  const token = req.headers.authorization?.replace('Bearer ', '');
+  const token = getAccessToken(req);
   if (!token) {
     res.status(401).json({ error: 'Access token is missing' });
     return;
   }
 
-  const timeRanges: TimeRange[] = ['short_term', 'medium_term', 'long_term'];
-  const result: Record<TimeRange, SpotifyTrackResponse> = {
-    short_term: { items: [] },
-    medium_term: { items: [] },
-    long_term: { items: [] },
-  };
-
-  console.log();
+  const result = createEmptyTimeRangeResult<SpotifyTrackResponse>({
+    items: [],
+  });
 
   try {
     for (const range of timeRanges) {
@@ -53,9 +75,7 @@ router.get('/most-streamed-track', async (req: Request, res: Response): Promise<
 
       const tracks = response.data.items;
 
-      console.log('tracks are', tracks);
       const artistIds = [...new Set(tracks.flatMap((track) => track.artists.map((a) => a.id)))];
-      console.log('artistIds are', artistIds);
 
       // Batch artist IDs to avoid hitting the 50 limit
       const batches = [];

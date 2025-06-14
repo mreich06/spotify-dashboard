@@ -14,7 +14,7 @@ export const store = configureStore({
     token: tokenReducer,
     artists: artistsReducer,
     topTracks: topTracksReducer,
-    playlists: playlistsReducer,
+    topPlaylists: playlistsReducer,
     summaryStats: summaryStatsReducer,
     timeRange: timeRangeReducer,
     mostStreamedTrack: MostStreamedTrackReducer,

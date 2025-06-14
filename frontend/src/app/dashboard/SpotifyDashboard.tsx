@@ -72,11 +72,11 @@ const SpotifyDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 auto-rows-min">
-          {/* <div className="col-span-full md:col-span-4 lg:col-span-3 space-y-6">
+          <div className="col-span-full md:col-span-4 lg:col-span-3 space-y-6">
             <SummaryCards timeRange={selectedRange} />
             <TopGenres timeRange={selectedRange} />
             <TopPlaylists timeRange={selectedRange} />
-          </div> */}
+          </div>
 
           <div className="col-span-full md:col-span-4 lg:col-span-1 lg:row-span-1 lg:row-start-1 lg:col-start-4">
             <MostStreamedTrack timeRange={selectedRange} />
