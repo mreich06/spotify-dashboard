@@ -1,6 +1,6 @@
 import express from 'express';
 import axios from 'axios';
-import { createEmptyTimeRangeResult, fetchSpotifyData, getAccessToken, timeRanges } from '../utils/spotifyRequest';
+import { createEmptyTimeRangeResult, fetchSpotifyData, getAccessToken, getTimeRangeData, timeRanges } from '../utils/spotifyRequest';
 import { fetchSummaryStats } from '../utils/summaryStats';
 import type {
   SpotifyTopArtistsResponse,
@@ -24,10 +24,8 @@ const router = express.Router();
 
 router.get('/top-playlists', async (req: Request, res: Response): Promise<void> => {
   const token = getAccessToken(req);
-  if (!token) {
-    res.status(401).json({ error: 'Access token is missing' });
-    return;
-  }
+  getTimeRangeData(token, res);
+
   const result = createEmptyTimeRangeResult<SpotifyPlaylistsResponse>({
     href: '',
     limit: 0,
@@ -53,7 +51,7 @@ router.get('/top-playlists', async (req: Request, res: Response): Promise<void> 
   }
 });
 
-// router.get('/summary-stats', fetchSummaryStats);
+router.get('/summary-stats', fetchSummaryStats);
 
 router.get('/most-streamed-track', async (req: Request, res: Response): Promise<void> => {
   const token = getAccessToken(req);
@@ -61,6 +59,8 @@ router.get('/most-streamed-track', async (req: Request, res: Response): Promise<
     res.status(401).json({ error: 'Access token is missing' });
     return;
   }
+
+  console.log('token is', token);
 
   const result = createEmptyTimeRangeResult<SpotifyTrackResponse>({
     items: [],
@@ -91,6 +91,7 @@ router.get('/most-streamed-track', async (req: Request, res: Response): Promise<
             headers: { Authorization: `Bearer ${token}` },
             params: { ids: batch.join(',') },
           });
+          console.log('most-streamed artistResponse', artistResponse);
 
           artistResponse.data.artists.forEach((artist: any) => {
             artistMap[artist.id] = {
@@ -99,16 +100,14 @@ router.get('/most-streamed-track', async (req: Request, res: Response): Promise<
             };
           });
         } catch (error: any) {
-          console.error('❌ Failed to fetch artist batch:', {
-            ids: batch,
-            message: error.message,
-            status: error.response?.status,
-            data: error.response?.data,
-          });
+          // console.error('❌ Failed to fetch artist batch:', {
+          //   ids: batch,
+          //   message: error.message,
+          //   status: error.response?.status,
+          //   data: error.response?.data,
+          // });
         }
       }
-
-      console.log('batches is', batches);
 
       const enrichedTracks = tracks.map((track) => {
         const artistId = track.artists[0]?.id;
@@ -119,14 +118,12 @@ router.get('/most-streamed-track', async (req: Request, res: Response): Promise<
           popularity: artistData.popularity,
         };
       });
-      console.log('enrichedTracks is', enrichedTracks);
 
       result[range] = {
         ...response.data,
         items: enrichedTracks,
       };
     }
-    console.log('result is', result);
 
     res.json(result);
   } catch (err) {
@@ -135,50 +132,42 @@ router.get('/most-streamed-track', async (req: Request, res: Response): Promise<
   }
 });
 
-// router.get('/top-genres-over-time', async (req, res) => {
-//   await fetchSpotifyData<any>('me/top/tracks?time_range=long_term&limit=1', req, res, async (_, req, res) => {
-//     const token = req.headers.authorization?.replace('Bearer ', '');
-//     if (!token) {
-//       res.status(401).json({ error: 'Missing token' });
-//       return;
-//     }
+router.get('/top-genres-over-time', async (req: Request, res: Response): Promise<void> => {
+  const token = getAccessToken(req);
+  if (!token) {
+    res.status(401).json({ error: 'Access token is missing' });
+    return;
+  }
 
-//     const timeRanges: TimeRange[] = ['short_term', 'medium_term', 'long_term'];
-//     const results: Record<string, Record<string, number>> = {};
+  const result = createEmptyTimeRangeResult<Record<string, number>>({});
 
-//     try {
-//       for (const range of timeRanges) {
-//         const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
-//           headers: { Authorization: `Bearer ${token}` },
-//           params: { time_range: range, limit: 50 },
-//         });
+  try {
+    for (const range of timeRanges) {
+      const response = await axios.get('https://api.spotify.com/v1/me/top/artists', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { time_range: range, limit: 20 },
+      });
 
-//         const tracks = response.data.items;
-//         const genreCounts: Record<string, number> = {};
+      const genreCounts: Record<string, number> = {};
 
-//         for (const track of tracks) {
-//           const artistId = track.artists?.[0]?.id;
-//           if (!artistId) continue;
+      response.data.items.forEach((artist: any) => {
+        artist.genres.forEach((genre: string) => {
+          genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+        });
+      });
 
-//           const artistResponse = await axios.get(`https://api.spotify.com/v1/artists/${artistId}`, {
-//             headers: { Authorization: `Bearer ${token}` },
-//           });
+      result[range] = genreCounts;
+    }
 
-//           const genres: string[] = artistResponse.data.genres || [];
-//           for (const genre of genres) {
-//             genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-//           }
-//         }
-
-//         results[range] = genreCounts;
-//       }
-
-//       res.json(results);
-//     } catch (error) {
-//       console.error('Error fetching genre trends:', error);
-//       res.status(500).json({ error: 'Failed to fetch genre trends' });
-//     }
-//   });
-// });
+    res.json(result);
+  } catch (err: any) {
+    console.error('Error fetching top genres:', {
+      message: err.message,
+      status: err.response?.status,
+      data: err.response?.data,
+    });
+    res.status(500).json({ error: 'Failed to fetch genre trends' });
+  }
+});
 
 export default router;

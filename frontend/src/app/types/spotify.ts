@@ -82,16 +82,28 @@ export interface GenreTrendMap {
   [genre: string]: number;
 }
 
-export interface GenreTrendsResponse {
-  short_term: GenreTrendMap;
-  medium_term: GenreTrendMap;
-  long_term: GenreTrendMap;
-}
-
 export interface CardProps {
   timeRange: 'short_term' | 'medium_term' | 'long_term';
 }
 
+export interface GenreStat {
+  name: string;
+  count: number;
+}
+
+export interface SummaryStats {
+  totalTracks: number;
+  totalMinutes: string;
+  avgMinutesPerDay: number;
+  avgPlaysPerDay: number;
+  genres: GenreStat[];
+}
 export type MostStreamedTrackResponse = Record<TimeRange, SpotifyTrackResponse>;
 
 export type SpotifyPlaylistsResponse = Record<TimeRange, SpotifyPlaylists>;
+
+export type SummaryStatsResponse = Record<TimeRange, SummaryStats>;
+
+export type TimeRangeRecord<T> = Record<TimeRange, T>;
+
+export type GenreTrendsResponse = Record<TimeRange, GenreTrendMap>;

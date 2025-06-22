@@ -29,7 +29,6 @@ const mostStreamedTrackSlice = createSlice({
       .addCase(fetchMostStreamedTrack.fulfilled, (state, action) => {
         state.loading = false;
         state.track = action.payload;
-        console.log('action.payload', action.payload);
       })
       .addCase(fetchMostStreamedTrack.rejected, (state, action) => {
         state.loading = false;

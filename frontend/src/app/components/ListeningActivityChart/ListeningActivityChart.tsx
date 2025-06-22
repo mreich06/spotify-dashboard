@@ -6,7 +6,7 @@ import { fetchGenreTrends } from '@/app/store/genreTrendsSlice';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import GlassCard from '../GlassCard/GlassCard';
 import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
-import { GenreTrendsResponse } from '@/app/types/spotify';
+import { GenreTrendMap, GenreTrendsResponse } from '@/app/types/spotify';
 
 const TopGenresOverTimeChart = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +21,7 @@ const TopGenresOverTimeChart = () => {
 
   // Extract top 5 genres across all time ranges
   const genreFrequency: Record<string, number> = {};
-  for (const timeRange of Object.values(data)) {
+  for (const timeRange of Object.values(data) as GenreTrendMap[]) {
     for (const [genre, count] of Object.entries(timeRange)) {
       if (typeof count === 'number') {
         genreFrequency[genre] = (genreFrequency[genre] || 0) + count;

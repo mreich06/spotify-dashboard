@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
 import { TimeRange } from '../../types/spotify';
+import querystring from 'querystring';
 
 type Handler<T> = (data: T, req: Request, res: Response) => Promise<void>;
 
@@ -19,6 +20,53 @@ const fetchWithRetry = async <T>(endpoint: string, token: string, retries = 2): 
       return fetchWithRetry<T>(endpoint, token, retries - 1);
     }
     throw error;
+  }
+};
+
+export const refreshAccessToken = async (refreshToken: string) => {
+  const authString = `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`;
+  const encodedAuth = Buffer.from(authString).toString('base64');
+
+  try {
+    const response = await axios.post(
+      'https://accounts.spotify.com/api/token',
+      querystring.stringify({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      }),
+      {
+        headers: {
+          Authorization: `Basic ${encodedAuth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      },
+    );
+
+    return response.data; // contains access_token and expires_in
+  } catch (err: unknown) {
+    const error = err as any; // or use a custom error type
+    console.error('Error refreshing access token:', error.response?.data || error.message);
+  }
+};
+export const fetchWithRefresh = async <T>(token: string, refreshToken: string, url: string, params = {}) => {
+  try {
+    const res = await axios.get<T>(url, {
+      headers: { Authorization: `Bearer ${token}` },
+      params,
+    });
+    return res.data;
+  } catch (err: any) {
+    if (err.response?.status === 401) {
+      // Token expired, try refreshing
+      const refreshed = await refreshAccessToken(refreshToken); // implement this
+      const res = await axios.get<T>(url, {
+        headers: { Authorization: `Bearer ${refreshed.access_token}` },
+        params,
+      });
+      return res.data;
+    } else {
+      throw err;
+    }
   }
 };
 
@@ -76,3 +124,10 @@ export const createEmptyTimeRangeResult = <T>(defaultValue: T): Record<TimeRange
 };
 
 export const timeRanges: TimeRange[] = ['short_term', 'medium_term', 'long_term'];
+
+export const getTimeRangeData = (token: any, res: Response) => {
+  if (!token) {
+    res.status(401).json({ error: 'Access token is missing' });
+    return;
+  }
+};

@@ -1,38 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createApiThunk } from '../utils/createApiThunk';
+import { SummaryStatsResponse } from '../types/spotify';
 
-type SummaryRange = 'short_term' | 'medium_term' | 'long_term';
-
-export interface GenreStat {
-  name: string;
-  count: number;
-}
-
-export interface SummaryStats {
-  totalTracks: number;
-  totalMinutes: string;
-  avgMinutesPerDay: number;
-  avgPlaysPerDay: number;
-  genres: GenreStat[];
-}
-
-export interface SummaryStatsState {
+interface SummaryStatsState {
+  stats: SummaryStatsResponse | null;
   loading: boolean;
   error: string | null;
-  data: Record<SummaryRange, SummaryStats | null>;
 }
 
 const initialState: SummaryStatsState = {
+  stats: null,
   loading: false,
   error: null,
-  data: {
-    short_term: null,
-    medium_term: null,
-    long_term: null,
-  },
 };
 
-export const fetchSummaryStats = createApiThunk<Record<SummaryRange, SummaryStats>>('/summaryStats/fetchSummaryStats', '/summary-stats');
+export const fetchSummaryStats = createApiThunk<SummaryStatsResponse>('/summaryStats/fetchSummaryStats', '/summary-stats');
 
 const summaryStatsSlice = createSlice({
   name: 'summaryStats',
@@ -46,7 +28,8 @@ const summaryStatsSlice = createSlice({
       })
       .addCase(fetchSummaryStats.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.stats = action.payload;
+        console.log('action.payload', action.payload);
       })
       .addCase(fetchSummaryStats.rejected, (state, action) => {
         state.loading = false;
