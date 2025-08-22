@@ -89,9 +89,9 @@ const SpotifyDashboard = () => {
             <TopArtistsDetails timeRange={selectedRange} />
           </div> */}
 
-          {/* <div className="md:col-span-4 lg:col-span-4">
-            <ListeningActivityChart timeRange={selectedRange} />
-          </div> */}
+          <div className="md:col-span-4 lg:col-span-4">
+            <ListeningActivityChart />
+          </div>
         </div>
       </main>
     </div>
