@@ -3,13 +3,23 @@ import tokenReducer from './tokenSlice';
 import artistsReducer from './artistsSlice';
 import topTracksReducer from './topTracksSlice';
 import playlistsReducer from './playlistsSlice';
+import summaryStatsReducer from './summarySlice';
+import timeRangeReducer from './timeRangeSlice';
+import MostStreamedTrackReducer from './mostStreamedTrackSlice';
+import TopArtistsReducer from './topArtistsSlice';
+import GenreTrendsReducer from './genreTrendsSlice';
 
 export const store = configureStore({
   reducer: {
     token: tokenReducer,
     artists: artistsReducer,
     topTracks: topTracksReducer,
-    playlists: playlistsReducer,
+    topPlaylists: playlistsReducer,
+    summaryStats: summaryStatsReducer,
+    timeRange: timeRangeReducer,
+    mostStreamedTrack: MostStreamedTrackReducer,
+    topArtists: TopArtistsReducer,
+    genreTrends: GenreTrendsReducer,
   },
 });
 
