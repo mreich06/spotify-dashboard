@@ -28,7 +28,7 @@ export interface SpotifyTopTracksResponse {
   offset: number;
   previous: string | null;
   total: number;
-  items: SpotifyArtist[];
+  items: SpotifyTrack[];
 }
 
 export interface SpotifyPlaylists {

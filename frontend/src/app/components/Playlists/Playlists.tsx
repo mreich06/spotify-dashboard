@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
-import { fetchPlaylists } from '@/app/store/playlistsSlice';
+import { fetchTopPlaylists } from '@/app/store/playlistsSlice';
 
 /**
  * Playlists component
@@ -13,10 +13,10 @@ import { fetchPlaylists } from '@/app/store/playlistsSlice';
  */
 const Playlists = () => {
   const dispatch = useAppDispatch();
-  const { playlists, loading, error } = useAppSelector((state) => state.playlists);
+  const { playlists, loading, error } = useAppSelector((state) => state.topPlaylists);
 
   useEffect(() => {
-    dispatch(fetchPlaylists());
+    dispatch(fetchTopPlaylists());
   }, [dispatch]);
 
   if (loading) return <p>Loading your playlists...</p>;
@@ -25,7 +25,7 @@ const Playlists = () => {
     <div className="pt-4 pl-8">
       <h1>My Playlists</h1>
       <ol className="pt-4">
-        {playlists.items.map((playlist) => (
+        {playlists?.['long_term'].items.map((playlist) => (
           <li key={playlist.id}>{playlist.name}</li>
         ))}
       </ol>
