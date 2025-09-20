@@ -11,22 +11,22 @@ interface SummaryCardsProps {
 
 export const SummaryCards = ({ timeRange }: SummaryCardsProps) => {
   const dispatch = useAppDispatch();
-  const { data, loading, error } = useAppSelector((state) => state.summaryStats);
+  const { stats, loading, error } = useAppSelector((state) => state.summaryStats);
 
   useEffect(() => {
     dispatch(fetchSummaryStats());
   }, [dispatch]);
 
-  const stats = data[timeRange];
+  const statsWithTimeRange = stats?.[timeRange]; // undefined if stats is null
 
   if (loading) return <p>Loading summary stats...</p>;
   if (error || !stats) return <p>Error loading summary stats: {error || 'No data available'}</p>;
 
   const statItems = [
-    { label: 'Total Tracks', value: stats.totalTracks },
-    { label: 'Total Play Minutes', value: stats.totalMinutes },
-    { label: 'Avg Minutes/Day', value: stats.avgMinutesPerDay },
-    { label: 'Avg Plays/Day', value: stats.avgPlaysPerDay },
+    { label: 'Total Tracks', value: statsWithTimeRange?.totalTracks },
+    { label: 'Total Play Minutes', value: statsWithTimeRange?.totalMinutes },
+    { label: 'Avg Minutes/Day', value: statsWithTimeRange?.avgMinutesPerDay },
+    { label: 'Avg Plays/Day', value: statsWithTimeRange?.avgPlaysPerDay },
   ];
 
   return (

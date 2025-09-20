@@ -4,14 +4,15 @@ import { useAppSelector } from '@/app/store/hooks';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import GlassCard from '../GlassCard/GlassCard';
 import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
+import { CardProps } from '@/app/types/spotify';
 
 const COLORS = ['#22c55e', '#16a34a', '#15803d', '#0f766e', '#065f46', '#064e3b'];
 
-const TopTracksBarChart = () => {
+const TopTracksBarChart = ({ timeRange }: CardProps) => {
   const { track } = useAppSelector((state) => state.mostStreamedTrack);
 
   const data =
-    track?.items?.slice(0, 6).map((t) => ({
+    track?.[timeRange]?.items?.slice(0, 6).map((t) => ({
       name: t.name.length > 20 ? `${t.name.slice(0, 20)}…` : t.name,
       popularity: t.popularity,
     })) || [];

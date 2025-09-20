@@ -3,6 +3,21 @@ import type { Request, Response } from 'express';
 import { TimeRange } from '../../types/spotify';
 import querystring from 'querystring';
 
+/**
+ * Spotify Web API request helpers.
+ *
+ * External Use:
+ * - fetchSpotifyData: Fetches a Spotify endpoint, handles token + optional custom handler
+ * - batchFetchArtists: Gets artist data in batches of 50 IDs
+ * - getAccessToken: Extracts bearer token from request headers
+ * - createEmptyTimeRangeResult: Builds { short_term, medium_term, long_term } with defaults
+ * - timeRanges: Supported Spotify time ranges
+ * - getTimeRangeData: Sends 401 if access token is missing
+ *
+ * Internal use:
+ * - fetchWithRetry: Retries Spotify requests on 429 rate limit
+ */
+
 type Handler<T> = (data: T, req: Request, res: Response) => Promise<void>;
 
 const fetchWithRetry = async <T>(endpoint: string, token: string, retries = 2): Promise<T> => {

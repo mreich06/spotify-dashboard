@@ -26,6 +26,7 @@ const MostStreamedTrack = ({ timeRange }: CardProps) => {
   if (loading) return <p className="text-white">Loading most streamed track...</p>;
   if (error || !track) return <p className="text-white">Error: {error || 'No track data'}</p>;
 
+  // only using first in this array so do we need it?
   const topTrack = track?.[timeRange]?.items[0];
   const image = topTrack.album.images[0]?.url;
   const title = topTrack.name;
@@ -43,7 +44,7 @@ const MostStreamedTrack = ({ timeRange }: CardProps) => {
         {image && <img src={image} alt={title} className="w-full h-full object-cover rounded-md mb-4" />}
         <div className="text-white space-y-1">
           <p className="font-bold text-2xl">{title}</p>
-          <p className="text-sm text-green-300 text-xl">{artist}</p>
+          <p className="text-green-300 text-xl">{artist}</p>
           <p className="text-sm text-gray-400 italic">Album: {album}</p>
         </div>
         <div className="mt-4 space-y-2 text-sm">

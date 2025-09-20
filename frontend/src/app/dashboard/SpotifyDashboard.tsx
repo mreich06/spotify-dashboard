@@ -82,12 +82,13 @@ const SpotifyDashboard = () => {
             <MostStreamedTrack timeRange={selectedRange} />
           </div>
 
-          {/* <div className="col-span-full md:col-span-4 lg:col-span-2">
+          <div className="col-span-full md:col-span-4 lg:col-span-2">
             <TopTracksBarChart timeRange={selectedRange} />
           </div>
+          {/* TODO: needs timeRange */}
           <div className="md:col-span-4 lg:col-span-2">
-            <TopArtistsDetails timeRange={selectedRange} />
-          </div> */}
+            <TopArtistsDetails />
+          </div>
 
           <div className="md:col-span-4 lg:col-span-4">
             <ListeningActivityChart />
