@@ -9,21 +9,23 @@ export const fetchUserListeningData = async (
 }> => {
   const timeRanges: TimeRange[] = ['short_term', 'medium_term', 'long_term'];
 
-  const topTracksByRange: Record<TimeRange, any[]> = {
-    short_term: [],
-    medium_term: [],
-    long_term: [],
+  const topTracksByRange: Record<TimeRange, SpotifyTrackResponse> = {
+    short_term: { items: [] },
+    medium_term: { items: [] },
+    long_term: { items: [] },
   };
-  const artistMap: Record<string, any> = {};
+
+  const artistMap: Record<string, { genres: string[]; popularity: number }> = {};
 
   for (const range of timeRanges) {
-    const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
+    const response = await axios.get<SpotifyTrackResponse>('https://api.spotify.com/v1/me/top/tracks', {
       headers: { Authorization: `Bearer ${token}` },
       params: { time_range: range, limit: 50 },
     });
 
+    topTracksByRange[range] = response.data;
+
     const tracks = response.data.items;
-    topTracksByRange[range] = tracks;
 
     const artistIds = [...new Set(tracks.flatMap((track: any) => track.artists.map((a: any) => a.id)))];
 
@@ -36,7 +38,10 @@ export const fetchUserListeningData = async (
       });
 
       artistResponse.data.artists.forEach((artist: any) => {
-        artistMap[artist.id] = artist;
+        artistMap[artist.id] = {
+          genres: artist.genres,
+          popularity: artist.popularity,
+        };
       });
 
       await new Promise((res) => setTimeout(res, 300)); // avoid 429

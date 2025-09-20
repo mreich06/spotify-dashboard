@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { SpotifyArtist, SpotifyTopTracksResponse } from '../types/spotify';
+import type { SpotifyTopTracksResponse, SpotifyTrack } from '../types/spotify';
 import { createApiThunk } from '../utils/createApiThunk';
 
 interface TopTracksState {
-  topTracks: SpotifyArtist[];
+  topTracks: SpotifyTrack[];
   loading: boolean;
   error: string | null;
 }
