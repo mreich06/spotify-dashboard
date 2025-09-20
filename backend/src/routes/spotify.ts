@@ -8,7 +8,7 @@ import type {
   SpotifyPlaylistsResponse,
   SpotifyTrackResponse,
   TimeRange,
-} from '../../types/spotify';
+} from '../types/spotify';
 import type { Request, Response } from 'express';
 
 const router = express.Router();

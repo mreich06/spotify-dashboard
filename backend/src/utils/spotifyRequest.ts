@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { Request, Response } from 'express';
-import { TimeRange } from '../../types/spotify';
+import { TimeRange } from '../types/spotify';
 import querystring from 'querystring';
 
 /**

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SpotifyTrackResponse, TimeRange } from '../../types/spotify';
+import { SpotifyTrackResponse, TimeRange } from '../types/spotify';
 
 export const fetchUserListeningData = async (
   token: string,

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'querystring';
 import dotenv from 'dotenv';
-import type { SpotifyTokenResponse } from '../../types/spotify';
+import type { SpotifyTokenResponse } from '../types/spotify';
 
 dotenv.config();
 
