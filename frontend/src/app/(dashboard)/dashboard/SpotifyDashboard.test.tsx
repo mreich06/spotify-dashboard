@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
+import { renderWithStore } from '../../../../test-utils/renderWithStore'; // adjust path if needed
 import SpotifyDashboard from './SpotifyDashboard';
-import { renderWithStore } from '../../../test-utils/renderWithStore'; // adjust path if needed
 
 jest.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams('access_token=mockToken'),
