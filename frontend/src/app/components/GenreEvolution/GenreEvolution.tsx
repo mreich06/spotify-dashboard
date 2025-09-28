@@ -3,55 +3,55 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchTopArtists } from '@/app/store/artistsSlice';
-import { SpotifyArtist } from '@/app/types/spotify';
 
-type TimeRange = 'short_term' | 'medium_term' | 'long_term';
-type GenreFrequencyMap = Record<string, Record<TimeRange, number>>;
+// type TimeRange = 'short_term' | 'medium_term' | 'long_term';
+// type GenreFrequencyMap = Record<string, Record<TimeRange, number>>;
 
-const countGenresByTimeRange = (data: Record<TimeRange, SpotifyArtist[]>): GenreFrequencyMap => {
-  const result: GenreFrequencyMap = {};
+// TODO: See if still need this
+// const countGenresByTimeRange = (data: Record<TimeRange, SpotifyArtist[]>): GenreFrequencyMap => {
+//   const result: GenreFrequencyMap = {};
 
-  // go through each time range to get the genre count for each
-  for (const range of ['short_term', 'medium_term', 'long_term'] as TimeRange[]) {
-    const artists = data[range];
+//   // go through each time range to get the genre count for each
+//   for (const range of ['short_term', 'medium_term', 'long_term'] as TimeRange[]) {
+//     const artists = data[range];
 
-    // for each time range, add the genre counts
-    for (const artist of artists) {
-      for (const genre of artist.genres) {
-        // if genre doesnt exist already, add it to result
-        if (!result[genre]) {
-          result[genre] = {
-            short_term: 0,
-            medium_term: 0,
-            long_term: 0,
-          };
-        }
-        result[genre][range]++; // increase if it exists
-      }
-    }
-  }
+//     // for each time range, add the genre counts
+//     for (const artist of artists) {
+//       for (const genre of artist.genres) {
+//         // if genre doesnt exist already, add it to result
+//         if (!result[genre]) {
+//           result[genre] = {
+//             short_term: 0,
+//             medium_term: 0,
+//             long_term: 0,
+//           };
+//         }
+//         result[genre][range]++; // increase if it exists
+//       }
+//     }
+//   }
 
-  return result;
-};
+//   return result;
+// };
 
-const getGenreCountsByTimeRange = (artistsByRange: Record<TimeRange, SpotifyArtist[]>) => {
-  // get genreCount for each time range
-  const genreCount = (artists: SpotifyArtist[]) => {
-    const genreCounts: Record<string, number> = {};
-    for (const artist of artists) {
-      for (const genre of artist.genres) {
-        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-      }
-    }
-    return genreCounts;
-  };
+// const getGenreCountsByTimeRange = (artistsByRange: Record<TimeRange, SpotifyArtist[]>) => {
+//   // get genreCount for each time range
+//   const genreCount = (artists: SpotifyArtist[]) => {
+//     const genreCounts: Record<string, number> = {};
+//     for (const artist of artists) {
+//       for (const genre of artist.genres) {
+//         genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+//       }
+//     }
+//     return genreCounts;
+//   };
 
-  return {
-    shortTermGenres: genreCount(artistsByRange.short_term),
-    mediumTermGenres: genreCount(artistsByRange.medium_term),
-    longTermGenres: genreCount(artistsByRange.long_term),
-  };
-};
+//   return {
+//     shortTermGenres: genreCount(artistsByRange.short_term),
+//     mediumTermGenres: genreCount(artistsByRange.medium_term),
+//     longTermGenres: genreCount(artistsByRange.long_term),
+//   };
+// };
 /**
  * TopTracks component
  *
@@ -73,7 +73,7 @@ const GenreEvolution = () => {
   if (error) return <p>Error loading genres: {error}</p>;
 
   // get genres of top artists for short, medium and long term
-  const { shortTermGenres, mediumTermGenres, longTermGenres } = getGenreCountsByTimeRange(artists);
+  // const { shortTermGenres, mediumTermGenres, longTermGenres } = getGenreCountsByTimeRange(artists);
 
   if (!artists?.short_term || !artists?.medium_term || !artists?.long_term) {
     return <p>No artist data available.</p>;

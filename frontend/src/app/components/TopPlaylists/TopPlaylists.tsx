@@ -7,6 +7,7 @@ import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
 import GlassCard from '../GlassCard/GlassCard';
 import { fetchTopPlaylists } from '@/app/store/playlistsSlice';
 import { CardProps } from '@/app/types/spotify';
+import Image from 'next/image';
 
 const TopPlaylists = ({ timeRange }: CardProps) => {
   const dispatch = useAppDispatch();
@@ -28,7 +29,7 @@ const TopPlaylists = ({ timeRange }: CardProps) => {
         <ul className="space-y-3">
           {playlistsData?.items.slice(0, 5).map((playlist) => (
             <li key={playlist.id} className="flex items-center gap-4">
-              {playlist.images?.[0]?.url && <img src={playlist.images[0].url} alt={playlist.name} className="w-12 h-12 rounded object-cover" />}
+              {playlist.images?.[0]?.url && <Image src={playlist.images[0].url} alt={playlist.name} className="w-12 h-12 rounded object-cover" />}
               <span className="text-md">{playlist.name}</span>
             </li>
           ))}

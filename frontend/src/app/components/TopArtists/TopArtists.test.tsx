@@ -1,6 +1,4 @@
-import { render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { screen } from '@testing-library/react';
 import TopArtists from '@/app/components/TopArtists/TopArtists';
 import { renderWithState } from '@/test-utils';
 
