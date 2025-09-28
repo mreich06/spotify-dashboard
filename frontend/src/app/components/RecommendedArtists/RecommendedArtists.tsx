@@ -41,7 +41,7 @@ const RecommendedArtists = () => {
   return (
     <GlassCard>
       <CardContent className="p-4">
-        <h2 className="text-lg font-semibold text-green-400 mb-4">Recommended Artists</h2>
+        <h2 className="title">Recommended Artists</h2>
         <ul className="space-y-4">
           {recommended.map((artist) => (
             <li key={artist.id} className="flex items-center gap-4">

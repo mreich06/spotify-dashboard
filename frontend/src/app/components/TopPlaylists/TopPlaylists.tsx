@@ -24,7 +24,7 @@ const TopPlaylists = ({ timeRange }: CardProps) => {
   return (
     <FadeInWhenVisible order="third">
       <GlassCard>
-        <h2 className="text-lg font-semibold text-green-400 mb-4">Your Top Playlists</h2>
+        <h2 className="title">Your Top Playlists</h2>
         <ul className="space-y-3">
           {playlistsData?.items.slice(0, 5).map((playlist) => (
             <li key={playlist.id} className="flex items-center gap-4">

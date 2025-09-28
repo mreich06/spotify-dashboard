@@ -21,7 +21,7 @@ const TopArtistsDetails = () => {
   return (
     <FadeInWhenVisible order="fifth">
       <GlassCard>
-        <h2 className="text-lg font-semibold text-green-400 mb-4">Top Artists (Details)</h2>
+        <h2 className="title">Top Artists (Details)</h2>
         <div className="overflow-x-auto">
           <table className="table-auto w-full text-left text-sm">
             <thead className="text-green-300 border-b border-green-700">
