@@ -1,15 +1,18 @@
-'use client';
-
 import { ReactNode } from 'react';
 
-interface GlassCardProps {
+interface CardProps {
   children: ReactNode;
   className?: string;
 }
 
-const GlassCard = ({ children, className }: GlassCardProps) => {
+const GlassCard = ({ children, className }: CardProps) => {
   return (
-    <div className={`rounded-xl p-6 bg-gradient-to-br from-[#0f1d17] via-[#0d1a15] to-black shadow-inner text-white ${className || ''}`}>
+    <div
+      className={`bg-[#0a1511] border border-[#1a2a22]
+                  rounded-xl p-6 text-[#dff1e9]
+                  shadow-[0_4px_12px_rgba(0,0,0,0.5),0_0_8px_rgba(16,40,24,0.4)] 
+                  ${className || ''}`}
+    >
       {children}
     </div>
   );

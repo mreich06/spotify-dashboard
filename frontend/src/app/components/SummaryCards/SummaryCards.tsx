@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchSummaryStats } from '@/app/store/summarySlice';
+import GlassCard from '../GlassCard/GlassCard';
 
 interface SummaryCardsProps {
   timeRange: 'short_term' | 'medium_term' | 'long_term';
@@ -33,10 +34,10 @@ export const SummaryCards = ({ timeRange }: SummaryCardsProps) => {
     <FadeInWhenVisible order="second">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statItems.map((stat, idx) => (
-          <div key={idx} className="rounded-xl p-4 bg-gradient-to-br from-[#0f1d17] via-[#0d1a15] to-black shadow-inner text-white">
+          <GlassCard key={idx}>
             <div className="text-sm text-green-300 mb-1 uppercase tracking-wide">{stat.label}</div>
             <div className="text-3xl font-bold text-green-400">{stat.value}</div>
-          </div>
+          </GlassCard>
         ))}
       </div>
     </FadeInWhenVisible>

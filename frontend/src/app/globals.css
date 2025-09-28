@@ -118,4 +118,31 @@
   body {
     @apply bg-background text-foreground;
   }
+  .title {
+    @apply text-lg font-semibold text-green-400 mb-4;
+  }
+  .cardStatsValue {
+    @apply text-lg font-bold;
+  }
+  .grayGreenText {
+    @apply text-xs text-[#7fae99];
+  }
+  .cardWhiteText {
+    @apply text-sm font-semibold;
+  }
+  .button {
+    @apply px-4 py-2 bg-[#182b23] hover:bg-[#203b30] rounded-md text-sm font-medium text-[#dff1e9];
+  }
+  .deleteButton {
+    @apply px-4 py-2 bg-[#1f1414] hover:bg-[#2a1c1c] rounded-md text-sm font-medium text-[#e68585];
+  }
+  .snapshot {
+    @apply text-xs px-2 py-0.5 rounded-md bg-[#123127] text-[#46c98c] border border-[#1a3d2f];
+  }
+  .savedCard {
+    @apply bg-[#0f1d17] border border-[#1a2a22] rounded-lg p-4;
+  }
+  .savedCardTitle {
+    @apply text-sm font-semibold mb-4 text-[#7fae99];
+  }
 }
