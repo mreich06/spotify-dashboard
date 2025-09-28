@@ -21,7 +21,7 @@ const TopTracksBarChart = ({ timeRange }: CardProps) => {
     <FadeInWhenVisible order="fifth">
       <GlassCard>
         <div className="p-4 h-[300px]">
-          <h2 className="text-lg font-semibold text-green-400 mb-4">Top Tracks by Popularity</h2>
+          <h2 className="title">Top Tracks by Popularity</h2>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart layout="vertical" data={data} margin={{ top: 10, right: 20, left: -30, bottom: 10 }}>
               <XAxis type="number" stroke="#ccc" />

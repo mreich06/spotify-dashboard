@@ -49,7 +49,7 @@ const TopGenresOverTimeChart = () => {
     <FadeInWhenVisible order="sixth">
       <GlassCard>
         <div className="p-4 h-[300px]">
-          <h2 className="text-lg font-semibold text-green-400 mb-4">Top Genres Over Time</h2>
+          <h2 className="title">Top Genres Over Time</h2>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
               <CartesianGrid stroke="#1a2a21" strokeDasharray="3 3" />

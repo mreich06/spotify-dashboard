@@ -40,7 +40,7 @@ const TopGenres = ({ timeRange }: CardProps) => {
     <FadeInWhenVisible order="third">
       <div className="relative rounded-xl overflow-hidden p-[1px]">
         <GlassCard>
-          <h2 className="text-lg font-semibold text-green-400 mb-4">Your Top 5 Genres</h2>
+          <h2 className="title">Your Top 5 Genres</h2>
           <div className="flex flex-col md:flex-row items-center justify-between h-full">
             {/* Pie chart */}
             <div className="w-full md:w-1/2 h-60">
