@@ -6,7 +6,7 @@ import { fetchTopArtists } from '@/app/store/artistsSlice';
 import { SpotifyArtist } from '@/app/types/spotify';
 
 type TimeRange = 'short_term' | 'medium_term' | 'long_term';
-type GenreFrequencyMap = Record<string, Record<TimeRange, number>>;
+// type GenreFrequencyMap = Record<string, Record<TimeRange, number>>;
 
 // TODO: See if still need this
 // const countGenresByTimeRange = (data: Record<TimeRange, SpotifyArtist[]>): GenreFrequencyMap => {
@@ -74,7 +74,7 @@ const GenreEvolution = () => {
   if (error) return <p>Error loading genres: {error}</p>;
 
   // get genres of top artists for short, medium and long term
-  const { shortTermGenres, mediumTermGenres, longTermGenres } = getGenreCountsByTimeRange(artists);
+  // const { shortTermGenres, mediumTermGenres, longTermGenres } = getGenreCountsByTimeRange(artists);
 
   if (!artists?.short_term || !artists?.medium_term || !artists?.long_term) {
     return <p>No artist data available.</p>;
