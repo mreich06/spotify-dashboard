@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchTopArtists } from '@/app/store/artistsSlice';
-import { SpotifyArtist } from '@/app/types/spotify';
 
 type TimeRange = 'short_term' | 'medium_term' | 'long_term';
 // type GenreFrequencyMap = Record<string, Record<TimeRange, number>>;
@@ -35,24 +34,24 @@ type TimeRange = 'short_term' | 'medium_term' | 'long_term';
 //   return result;
 // };
 
-const getGenreCountsByTimeRange = (artistsByRange: Record<TimeRange, SpotifyArtist[]>) => {
-  // get genreCount for each time range
-  const genreCount = (artists: SpotifyArtist[]) => {
-    const genreCounts: Record<string, number> = {};
-    for (const artist of artists) {
-      for (const genre of artist.genres) {
-        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-      }
-    }
-    return genreCounts;
-  };
+// const getGenreCountsByTimeRange = (artistsByRange: Record<TimeRange, SpotifyArtist[]>) => {
+//   // get genreCount for each time range
+//   const genreCount = (artists: SpotifyArtist[]) => {
+//     const genreCounts: Record<string, number> = {};
+//     for (const artist of artists) {
+//       for (const genre of artist.genres) {
+//         genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+//       }
+//     }
+//     return genreCounts;
+//   };
 
-  return {
-    shortTermGenres: genreCount(artistsByRange.short_term),
-    mediumTermGenres: genreCount(artistsByRange.medium_term),
-    longTermGenres: genreCount(artistsByRange.long_term),
-  };
-};
+//   return {
+//     shortTermGenres: genreCount(artistsByRange.short_term),
+//     mediumTermGenres: genreCount(artistsByRange.medium_term),
+//     longTermGenres: genreCount(artistsByRange.long_term),
+//   };
+// };
 /**
  * TopTracks component
  *
