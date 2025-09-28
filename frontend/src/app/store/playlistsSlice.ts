@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { createApiThunk } from '../utils/createApiThunk';
 import { SpotifyPlaylistsResponse } from '../types/spotify';
 
-export const fetchTopPlaylists = createApiThunk<SpotifyPlaylistsResponse>('/playlists/fetchTopPlaylists', '/top-playlists');
+export const fetchTopPlaylists = createApiThunk<SpotifyPlaylistsResponse>('/playlists/fetchTopPlaylists', '/playlists');
 
 interface TopPlaylistsState {
   playlists: SpotifyPlaylistsResponse | null;

@@ -23,7 +23,7 @@ router.get('/top-tracks', async (req: Request, res: Response) => {
 });
 
 // TODO: move this to Playlists tab
-router.get('/top-playlists', async (req: Request, res: Response): Promise<void> => {
+router.get('/playlists', async (req: Request, res: Response): Promise<void> => {
   const token = getAccessToken(req);
   getTimeRangeData(token, res);
 

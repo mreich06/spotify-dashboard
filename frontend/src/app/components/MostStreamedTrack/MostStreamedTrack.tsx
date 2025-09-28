@@ -7,6 +7,7 @@ import GlassCard from '../GlassCard/GlassCard';
 import { fetchMostStreamedTrack } from '@/app/store/mostStreamedTrackSlice';
 import { CardProps } from '@/app/types/spotify';
 import { capitalizeFirstLetter, msToMinutesAndSeconds } from '@/lib/utils';
+import Image from 'next/image';
 
 const Section = ({ content, title, className }: { content: string; title: string; className?: string }) => (
   <div className={className}>
@@ -41,7 +42,7 @@ const MostStreamedTrack = ({ timeRange }: CardProps) => {
     <FadeInWhenVisible order="second" className="h-full">
       <GlassCard className="h-full flex flex-col justify-between">
         <h2 className="text-lg font-semibold text-green-400 mb-4">Most Streamed Track</h2>
-        {image && <img src={image} alt={title} className="w-full h-full object-cover rounded-md mb-4" />}
+        {image && <Image src={image} alt={title} className="w-full h-full object-cover rounded-md mb-4" />}
         <div className="text-white space-y-1">
           <p className="font-bold text-2xl">{title}</p>
           <p className="text-green-300 text-xl">{artist}</p>

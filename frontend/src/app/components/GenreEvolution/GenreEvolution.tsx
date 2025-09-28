@@ -8,31 +8,32 @@ import { SpotifyArtist } from '@/app/types/spotify';
 type TimeRange = 'short_term' | 'medium_term' | 'long_term';
 type GenreFrequencyMap = Record<string, Record<TimeRange, number>>;
 
-const countGenresByTimeRange = (data: Record<TimeRange, SpotifyArtist[]>): GenreFrequencyMap => {
-  const result: GenreFrequencyMap = {};
+// TODO: See if still need this
+// const countGenresByTimeRange = (data: Record<TimeRange, SpotifyArtist[]>): GenreFrequencyMap => {
+//   const result: GenreFrequencyMap = {};
 
-  // go through each time range to get the genre count for each
-  for (const range of ['short_term', 'medium_term', 'long_term'] as TimeRange[]) {
-    const artists = data[range];
+//   // go through each time range to get the genre count for each
+//   for (const range of ['short_term', 'medium_term', 'long_term'] as TimeRange[]) {
+//     const artists = data[range];
 
-    // for each time range, add the genre counts
-    for (const artist of artists) {
-      for (const genre of artist.genres) {
-        // if genre doesnt exist already, add it to result
-        if (!result[genre]) {
-          result[genre] = {
-            short_term: 0,
-            medium_term: 0,
-            long_term: 0,
-          };
-        }
-        result[genre][range]++; // increase if it exists
-      }
-    }
-  }
+//     // for each time range, add the genre counts
+//     for (const artist of artists) {
+//       for (const genre of artist.genres) {
+//         // if genre doesnt exist already, add it to result
+//         if (!result[genre]) {
+//           result[genre] = {
+//             short_term: 0,
+//             medium_term: 0,
+//             long_term: 0,
+//           };
+//         }
+//         result[genre][range]++; // increase if it exists
+//       }
+//     }
+//   }
 
-  return result;
-};
+//   return result;
+// };
 
 const getGenreCountsByTimeRange = (artistsByRange: Record<TimeRange, SpotifyArtist[]>) => {
   // get genreCount for each time range

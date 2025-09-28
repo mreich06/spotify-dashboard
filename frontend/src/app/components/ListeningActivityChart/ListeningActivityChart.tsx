@@ -6,6 +6,12 @@ import { fetchGenreTrends } from '@/app/store/genreTrendsSlice';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import GlassCard from '../GlassCard/GlassCard';
 import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
+import { TimeRange } from '@/app/types/spotify';
+
+type ChartRow = {
+  time: TimeRange;
+  [genre: string]: number | TimeRange;
+};
 
 // from top-genres-over-time route
 const TopGenresOverTimeChart = () => {
@@ -32,13 +38,13 @@ const TopGenresOverTimeChart = () => {
   // Sort by total and pick top 5
   const topGenres = genreTotals
     .sort((a, b) => b.total - a.total)
-    .slice(0, 5) // <-- change this number to show more/less
+    .slice(0, 5) // change this number to show more/less
     .map((g) => g.genre);
 
   // Put into chart data format
   // [{ time: "short_term", pop: 10, rock: 5, ... }, ...]
-  const chartData = Object.entries(data).map(([range, rangeData]) => {
-    const row: Record<string, any> = { time: range };
+  const chartData: ChartRow[] = Object.entries(data).map(([range, rangeData]) => {
+    const row: ChartRow = { time: range as TimeRange };
     for (const genre of topGenres) {
       row[genre] = rangeData[genre] || 0;
     }
