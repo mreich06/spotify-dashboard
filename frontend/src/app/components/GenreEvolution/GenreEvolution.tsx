@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { fetchTopArtists } from '@/app/store/artistsSlice';
 
-type TimeRange = 'short_term' | 'medium_term' | 'long_term';
+// type TimeRange = 'short_term' | 'medium_term' | 'long_term';
 // type GenreFrequencyMap = Record<string, Record<TimeRange, number>>;
 
 // TODO: See if still need this
