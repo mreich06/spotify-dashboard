@@ -29,7 +29,9 @@ const TopPlaylists = ({ timeRange }: CardProps) => {
         <ul className="space-y-3">
           {playlistsData?.items.slice(0, 5).map((playlist) => (
             <li key={playlist.id} className="flex items-center gap-4">
-              {playlist.images?.[0]?.url && <Image src={playlist.images[0].url} alt={playlist.name} className="w-12 h-12 rounded object-cover" />}
+              {playlist.images?.[0]?.url && (
+                <Image src={playlist.images[0].url} alt={playlist.name} width={48} height={48} className="w-12 h-12 rounded object-cover" />
+              )}
               <span className="text-md">{playlist.name}</span>
             </li>
           ))}

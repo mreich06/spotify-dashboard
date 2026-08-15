@@ -1,8 +1,7 @@
 'use client';
-import { LayoutDashboard, Sparkles, Save, Menu } from 'lucide-react';
+import { LayoutDashboard, Sparkles, Save, Menu, User } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
@@ -15,7 +14,9 @@ const Sidebar = () => {
 
       {/* Profile */}
       <div className="flex flex-col items-center px-2 mb-4">
-        <Image alt="Profile" className="w-20 h-20 rounded-full mb-2" />
+        <div className="w-20 h-20 rounded-full mb-2 bg-[#1a2a21] flex items-center justify-center">
+          <User className="w-9 h-9 text-white/70" />
+        </div>
         <div className="border-t border-white/20 w-full" />
       </div>
 

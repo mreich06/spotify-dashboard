@@ -46,7 +46,13 @@ const RecommendedArtists = () => {
         <ul className="space-y-4">
           {recommended.map((artist) => (
             <li key={artist.id} className="flex items-center gap-4">
-              <Image src={artist.imageUrl} alt={artist.name} className="w-12 h-12 rounded-full object-cover border border-green-700/40 shadow-sm" />
+              <Image
+                src={artist.imageUrl}
+                alt={artist.name}
+                width={48}
+                height={48}
+                className="w-12 h-12 rounded-full object-cover border border-green-700/40 shadow-sm"
+              />
               <span className="text-md text-white">{artist.name}</span>
             </li>
           ))}

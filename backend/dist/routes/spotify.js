@@ -16,7 +16,7 @@ router.get('/top-tracks', async (req, res) => {
     (0, spotifyRequest_1.fetchSpotifyData)('me/top/tracks', req, res);
 });
 // TODO: move this to Playlists tab
-router.get('/top-playlists', async (req, res) => {
+router.get('/playlists', async (req, res) => {
     const token = (0, spotifyRequest_1.getAccessToken)(req);
     (0, spotifyRequest_1.getTimeRangeData)(token, res);
     const result = (0, spotifyRequest_1.createEmptyTimeRangeResult)({

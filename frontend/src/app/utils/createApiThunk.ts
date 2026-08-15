@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/lib/api';
 
+// we are returning a function menaing we will use fetchTopArtists as a function with paramters
 export const createApiThunk = <ReturnType>(type: string, url: string) => {
   return createAsyncThunk(type, async (params?: { query?: Record<string, string> }) => {
     try {

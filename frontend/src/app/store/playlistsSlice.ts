@@ -4,7 +4,7 @@ import { SpotifyPlaylistsResponse } from '../types/spotify';
 
 export const fetchTopPlaylists = createApiThunk<SpotifyPlaylistsResponse>('/playlists/fetchTopPlaylists', '/playlists');
 
-interface TopPlaylistsState {
+export interface TopPlaylistsState {
   playlists: SpotifyPlaylistsResponse | null;
   loading: boolean;
   error: string | null;
