@@ -25,8 +25,8 @@ export const SummaryCards = ({ timeRange }: SummaryCardsProps) => {
   const statItems = [
     { label: 'Total Tracks', value: statsWithTimeRange?.totalTracks },
     { label: 'Total Play Minutes', value: statsWithTimeRange?.totalMinutes },
-    { label: 'Avg Minutes/Day', value: statsWithTimeRange?.avgMinutesPerDay },
-    { label: 'Avg Plays/Day', value: statsWithTimeRange?.avgPlaysPerDay },
+    { label: 'Avg Track Length (min)', value: statsWithTimeRange?.avgTrackLength },
+    { label: 'Avg Popularity', value: statsWithTimeRange?.avgPopularity },
   ];
 
   return (

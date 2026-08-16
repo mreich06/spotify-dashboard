@@ -47,9 +47,7 @@ class SpotifyAuthError extends Error {
   status = 401;
 }
 
-// handles expired tokens (401) and rate limits (429), retrying once fixed.
-// new tokens get written to `res` so the frontend can save them instead of
-// refreshing again on every request
+// retries on expired tokens (401) and rate limits (429), passes new tokens back via res
 export const fetchSpotify = async <T>(
   url: string,
   accessToken: string,

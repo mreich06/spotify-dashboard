@@ -94,8 +94,8 @@ export interface GenreStat {
 export interface SummaryStats {
   totalTracks: number;
   totalMinutes: string;
-  avgMinutesPerDay: number;
-  avgPlaysPerDay: number;
+  avgTrackLength: string;
+  avgPopularity: number;
   genres: GenreStat[];
 }
 export type MostStreamedTrackResponse = Record<TimeRange, SpotifyTrackResponse>;

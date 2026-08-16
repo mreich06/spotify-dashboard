@@ -12,8 +12,8 @@ const fetchSummaryStats = async (req, res) => {
     const result = (0, spotifyRequest_1.createEmptyTimeRangeResult)({
         totalTracks: 0,
         totalMinutes: '0.0',
-        avgMinutesPerDay: 0,
-        avgPlaysPerDay: 0,
+        avgTrackLength: '0.0',
+        avgPopularity: 0,
         genres: [],
     });
     try {
@@ -22,11 +22,10 @@ const fetchSummaryStats = async (req, res) => {
             const items = data.items;
             if (!items || !Array.isArray(items))
                 continue;
-            const totalTracks = items.length;
+            const totalTracks = data.total;
             const totalMinutes = items.reduce((sum, track) => sum + track.duration_ms / 60000, 0);
-            const days = range === 'short_term' ? 28 : range === 'medium_term' ? 180 : 730;
-            const avgMinutesPerDay = +(totalMinutes / days).toFixed(1);
-            const avgPlaysPerDay = +(totalTracks / days).toFixed(1);
+            const avgTrackLength = +(totalMinutes / items.length).toFixed(1);
+            const avgPopularity = +(items.reduce((sum, track) => sum + (track.popularity || 0), 0) / items.length).toFixed(1);
             const artistIds = Array.from(new Set(items.flatMap((track) => track.artists.map((artist) => artist.id)))).slice(0, 50);
             const genreMap = {};
             if (artistIds.length > 0) {
@@ -44,8 +43,8 @@ const fetchSummaryStats = async (req, res) => {
             result[range] = {
                 totalTracks,
                 totalMinutes: totalMinutes.toFixed(1),
-                avgMinutesPerDay,
-                avgPlaysPerDay,
+                avgTrackLength: avgTrackLength.toFixed(1),
+                avgPopularity,
                 genres,
             };
         }

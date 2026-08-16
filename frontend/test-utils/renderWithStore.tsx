@@ -134,8 +134,8 @@ export const renderWithStore = (ui: React.ReactNode) => {
           short_term: {
             totalTracks: 15,
             totalMinutes: '45.2',
-            avgMinutesPerDay: 1.6,
-            avgPlaysPerDay: 0.5,
+            avgTrackLength: '3.0',
+            avgPopularity: 62,
             genres: [
               { name: 'pop', count: 5 },
               { name: 'rock', count: 3 },
@@ -147,8 +147,8 @@ export const renderWithStore = (ui: React.ReactNode) => {
           medium_term: {
             totalTracks: 40,
             totalMinutes: '120.7',
-            avgMinutesPerDay: 2.1,
-            avgPlaysPerDay: 0.7,
+            avgTrackLength: '3.0',
+            avgPopularity: 58,
             genres: [
               { name: 'pop', count: 10 },
               { name: 'rock', count: 8 },
@@ -160,8 +160,8 @@ export const renderWithStore = (ui: React.ReactNode) => {
           long_term: {
             totalTracks: 120,
             totalMinutes: '360.3',
-            avgMinutesPerDay: 2.7,
-            avgPlaysPerDay: 0.9,
+            avgTrackLength: '3.0',
+            avgPopularity: 65,
             genres: [
               { name: 'pop', count: 25 },
               { name: 'rock', count: 20 },

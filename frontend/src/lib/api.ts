@@ -21,8 +21,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// save a new token if the backend refreshed one for us, otherwise
-// kick back to login if it's really expired
+// save a refreshed token, or bounce to login if it's really expired
 api.interceptors.response.use(
   (res) => {
     const newAccessToken = res.headers['x-new-access-token'];

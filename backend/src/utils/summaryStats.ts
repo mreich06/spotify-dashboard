@@ -4,8 +4,8 @@ import { fetchSpotify, getAccessToken, getRefreshToken, timeRanges, createEmptyT
 interface SummaryStats {
   totalTracks: number;
   totalMinutes: string;
-  avgMinutesPerDay: number;
-  avgPlaysPerDay: number;
+  avgTrackLength: string;
+  avgPopularity: number;
   genres: { name: string; count: number }[];
 }
 
@@ -20,14 +20,14 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
   const result = createEmptyTimeRangeResult<SummaryStats>({
     totalTracks: 0,
     totalMinutes: '0.0',
-    avgMinutesPerDay: 0,
-    avgPlaysPerDay: 0,
+    avgTrackLength: '0.0',
+    avgPopularity: 0,
     genres: [],
   });
 
   try {
     for (const range of timeRanges) {
-      const data = await fetchSpotify<{ items: any[] }>(
+      const data = await fetchSpotify<{ items: any[]; total: number }>(
         'https://api.spotify.com/v1/me/top/tracks',
         token,
         refreshToken ?? '',
@@ -39,11 +39,10 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
       const items = data.items;
       if (!items || !Array.isArray(items)) continue;
 
-      const totalTracks = items.length;
+      const totalTracks = data.total; // Spotify's real count, not just this page's size
       const totalMinutes = items.reduce((sum: number, track: any) => sum + track.duration_ms / 60000, 0);
-      const days = range === 'short_term' ? 28 : range === 'medium_term' ? 180 : 730;
-      const avgMinutesPerDay = +(totalMinutes / days).toFixed(1);
-      const avgPlaysPerDay = +(totalTracks / days).toFixed(1);
+      const avgTrackLength = +(totalMinutes / items.length).toFixed(1);
+      const avgPopularity = +(items.reduce((sum: number, track: any) => sum + (track.popularity || 0), 0) / items.length).toFixed(1);
 
       const artistIds = Array.from(new Set(items.flatMap((track: any) => track.artists.map((artist: any) => artist.id)))).slice(0, 50);
       const genreMap: Record<string, number> = {};
@@ -73,8 +72,8 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
       result[range] = {
         totalTracks,
         totalMinutes: totalMinutes.toFixed(1),
-        avgMinutesPerDay,
-        avgPlaysPerDay,
+        avgTrackLength: avgTrackLength.toFixed(1),
+        avgPopularity,
         genres,
       };
     }
