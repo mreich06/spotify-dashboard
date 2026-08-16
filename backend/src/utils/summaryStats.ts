@@ -1,6 +1,5 @@
 import type { Request, Response } from 'express';
-import axios from 'axios';
-import { getAccessToken, timeRanges, createEmptyTimeRangeResult } from '../utils/spotifyRequest';
+import { fetchSpotify, getAccessToken, getRefreshToken, timeRanges, createEmptyTimeRangeResult } from '../utils/spotifyRequest';
 
 interface SummaryStats {
   totalTracks: number;
@@ -12,6 +11,7 @@ interface SummaryStats {
 
 export const fetchSummaryStats = async (req: Request, res: Response): Promise<void> => {
   const token = getAccessToken(req);
+  const refreshToken = getRefreshToken(req);
   if (!token) {
     res.status(401).json({ error: 'Access token is missing' });
     return;
@@ -27,12 +27,16 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
 
   try {
     for (const range of timeRanges) {
-      const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { time_range: range, limit: 50 },
-      });
+      const data = await fetchSpotify<{ items: any[] }>(
+        'https://api.spotify.com/v1/me/top/tracks',
+        token,
+        refreshToken ?? '',
+        { time_range: range, limit: 50 },
+        2,
+        res,
+      );
 
-      const items = response.data.items;
+      const items = data.items;
       if (!items || !Array.isArray(items)) continue;
 
       const totalTracks = items.length;
@@ -45,12 +49,16 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
       const genreMap: Record<string, number> = {};
 
       if (artistIds.length > 0) {
-        const artistResponse = await axios.get('https://api.spotify.com/v1/artists', {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { ids: artistIds.join(',') },
-        });
+        const artistData = await fetchSpotify<{ artists: any[] }>(
+          'https://api.spotify.com/v1/artists',
+          token,
+          refreshToken ?? '',
+          { ids: artistIds.join(',') },
+          2,
+          res,
+        );
 
-        artistResponse.data.artists.forEach((artist: any) => {
+        artistData.artists.forEach((artist: any) => {
           artist.genres.forEach((genre: string) => {
             genreMap[genre] = (genreMap[genre] || 0) + 1;
           });
@@ -78,6 +86,6 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
       status: err.response?.status,
       data: err.response?.data,
     });
-    res.status(500).json({ error: 'Failed to fetch summary stats' });
+    res.status(err.status === 401 ? 401 : 500).json({ error: 'Failed to fetch summary stats' });
   }
 };

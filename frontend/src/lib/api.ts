@@ -21,9 +21,16 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor - If backend still returns 401, redirect to login
+// save a new token if the backend refreshed one for us, otherwise
+// kick back to login if it's really expired
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    const newAccessToken = res.headers['x-new-access-token'];
+    const newRefreshToken = res.headers['x-new-refresh-token'];
+    if (newAccessToken) localStorage.setItem('access_token', newAccessToken);
+    if (newRefreshToken) localStorage.setItem('refresh_token', newRefreshToken);
+    return res;
+  },
   async (err) => {
     if (err.response?.status === 401) {
       console.error('Session expired or invalid refresh token.');

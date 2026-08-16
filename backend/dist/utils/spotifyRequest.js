@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTimeRangeData = exports.timeRanges = exports.createEmptyTimeRangeResult = exports.getAccessToken = exports.fetchSpotifyData = exports.fetchSpotify = exports.refreshAccessToken = void 0;
+exports.getTimeRangeData = exports.timeRanges = exports.createEmptyTimeRangeResult = exports.getRefreshToken = exports.getAccessToken = exports.fetchSpotifyData = exports.fetchSpotify = exports.refreshAccessToken = void 0;
 const axios_1 = __importDefault(require("axios"));
 const querystring_1 = __importDefault(require("querystring"));
 /**
@@ -24,35 +24,53 @@ const refreshAccessToken = async (refreshToken) => {
     return response.data; // contains access_token and expires_in
 };
 exports.refreshAccessToken = refreshAccessToken;
-/**
- * Fetcher that handles both 401 (expired token) and 429 (rate limit)
- */
-const fetchSpotify = async (url, accessToken, refreshToken, params = {}, retries = 2) => {
+// so routes can send 401 instead of 500 when the refresh itself fails
+class SpotifyAuthError extends Error {
+    constructor() {
+        super(...arguments);
+        this.status = 401;
+    }
+}
+// handles expired tokens (401) and rate limits (429), retrying once fixed.
+// new tokens get written to `res` so the frontend can save them instead of
+// refreshing again on every request
+const fetchSpotify = async (url, accessToken, refreshToken, params = {}, retries = 2, res) => {
     try {
-        const res = await axios_1.default.get(url, {
+        const response = await axios_1.default.get(url, {
             headers: { Authorization: `Bearer ${accessToken}` },
             params,
         });
-        return res.data;
+        return response.data;
     }
     catch (err) {
         const status = err.response?.status;
-        // Handle rate limiting
+        // rate limited, back off and try again
         if (status === 429 && retries > 0) {
             const retryAfter = parseInt(err.response.headers['retry-after'] || '1', 10) * 1000;
             console.warn(`Rate limited. Retrying after ${retryAfter} ms...`);
             await new Promise((resolve) => setTimeout(resolve, retryAfter));
-            return (0, exports.fetchSpotify)(url, accessToken, refreshToken, params, retries - 1);
+            return (0, exports.fetchSpotify)(url, accessToken, refreshToken, params, retries - 1, res);
         }
-        // Handle expired token
+        // token's expired, try refreshing it
         if (status === 401 && refreshToken) {
             console.warn('Access token expired. Refreshing...');
-            const refreshed = await (0, exports.refreshAccessToken)(refreshToken);
-            const res = await axios_1.default.get(url, {
+            let refreshed;
+            try {
+                refreshed = await (0, exports.refreshAccessToken)(refreshToken);
+            }
+            catch (refreshErr) {
+                console.warn('Refresh token invalid or expired. User must log in again.');
+                throw new SpotifyAuthError('Refresh token invalid or expired');
+            }
+            res?.setHeader('x-new-access-token', refreshed.access_token);
+            if (refreshed.refresh_token) {
+                res?.setHeader('x-new-refresh-token', refreshed.refresh_token);
+            }
+            const retried = await axios_1.default.get(url, {
                 headers: { Authorization: `Bearer ${refreshed.access_token}` },
                 params,
             });
-            return res.data;
+            return retried.data;
         }
         throw err;
     }
@@ -70,7 +88,7 @@ const fetchSpotifyData = async (endpoint, req, res, customHandler) => {
     }
     try {
         const url = `https://api.spotify.com/v1/${endpoint}`;
-        const data = await (0, exports.fetchSpotify)(url, accessToken, refreshToken);
+        const data = await (0, exports.fetchSpotify)(url, accessToken, refreshToken, {}, 2, res);
         if (customHandler) {
             await customHandler(data, req, res);
         }
@@ -80,12 +98,14 @@ const fetchSpotifyData = async (endpoint, req, res, customHandler) => {
     }
     catch (error) {
         console.error(`Failed to fetch ${endpoint}`, error.message);
-        res.status(500).json({ error: `Failed to fetch ${endpoint}` });
+        res.status(error.status === 401 ? 401 : 500).json({ error: `Failed to fetch ${endpoint}` });
     }
 };
 exports.fetchSpotifyData = fetchSpotifyData;
 const getAccessToken = (req) => req.headers.authorization?.replace('Bearer ', '');
 exports.getAccessToken = getAccessToken;
+const getRefreshToken = (req) => req.headers['x-refresh-token'];
+exports.getRefreshToken = getRefreshToken;
 const createEmptyTimeRangeResult = (defaultValue) => ({
     short_term: defaultValue,
     medium_term: defaultValue,

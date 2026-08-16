@@ -6,7 +6,7 @@ import spotifyRoutes from './routes/spotify';
 // defines and exports the Express app
 
 const app = express();
-app.use(cors());
+app.use(cors({ exposedHeaders: ['x-new-access-token', 'x-new-refresh-token'] }));
 app.use(express.json());
 
 app.use('/auth', authRoutes);
