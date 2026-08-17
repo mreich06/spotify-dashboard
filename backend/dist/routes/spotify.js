@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const axios_1 = __importDefault(require("axios"));
 const spotifyRequest_1 = require("../utils/spotifyRequest");
 const summaryStats_1 = require("../utils/summaryStats");
 const router = express_1.default.Router();
@@ -16,9 +15,12 @@ router.get('/top-tracks', async (req, res) => {
     (0, spotifyRequest_1.fetchSpotifyData)('me/top/tracks', req, res);
 });
 // TODO: move this to Playlists tab
-router.get('/top-playlists', async (req, res) => {
+router.get('/playlists', async (req, res) => {
     const token = (0, spotifyRequest_1.getAccessToken)(req);
+    const refreshToken = (0, spotifyRequest_1.getRefreshToken)(req);
     (0, spotifyRequest_1.getTimeRangeData)(token, res);
+    if (!token)
+        return;
     const result = (0, spotifyRequest_1.createEmptyTimeRangeResult)({
         href: '',
         limit: 0,
@@ -27,34 +29,31 @@ router.get('/top-playlists', async (req, res) => {
     });
     try {
         for (const range of spotifyRequest_1.timeRanges) {
-            const response = await axios_1.default.get('https://api.spotify.com/v1/me/playlists', {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { limit: 10 },
-            });
+            const data = await (0, spotifyRequest_1.fetchSpotify)('https://api.spotify.com/v1/me/playlists', token, refreshToken ?? '', { limit: 10 }, 2, res);
             // Just reuse the same response for all ranges (since Spotify playlists API doesn’t support time_range)
-            result[range] = response.data;
+            result[range] = data;
         }
         res.json(result);
     }
     catch (err) {
         console.error('Error fetching top playlists:', err);
-        res.status(500).json({ error: 'Failed to fetch playlists' });
+        res.status(err.status === 401 ? 401 : 500).json({ error: 'Failed to fetch playlists' });
     }
 });
 router.get('/summary-stats', summaryStats_1.fetchSummaryStats);
 router.get('/most-streamed-track', async (req, res) => {
     const token = (0, spotifyRequest_1.getAccessToken)(req);
+    const refreshToken = (0, spotifyRequest_1.getRefreshToken)(req);
     (0, spotifyRequest_1.getTimeRangeData)(token, res);
+    if (!token)
+        return;
     const result = (0, spotifyRequest_1.createEmptyTimeRangeResult)({
         items: [],
     });
     try {
         for (const range of spotifyRequest_1.timeRanges) {
-            const response = await axios_1.default.get('https://api.spotify.com/v1/me/top/tracks', {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { time_range: range, limit: 10 },
-            });
-            const tracks = response.data.items;
+            const data = await (0, spotifyRequest_1.fetchSpotify)('https://api.spotify.com/v1/me/top/tracks', token, refreshToken ?? '', { time_range: range, limit: 10 }, 2, res);
+            const tracks = data.items;
             const artistIds = [...new Set(tracks.flatMap((track) => track.artists.map((a) => a.id)))];
             // Batch artist IDs to avoid hitting the 50 limit
             const batches = [];
@@ -64,11 +63,8 @@ router.get('/most-streamed-track', async (req, res) => {
             const artistMap = {};
             for (const batch of batches) {
                 try {
-                    const artistResponse = await axios_1.default.get('https://api.spotify.com/v1/artists', {
-                        headers: { Authorization: `Bearer ${token}` },
-                        params: { ids: batch.join(',') },
-                    });
-                    artistResponse.data.artists.forEach((artist) => {
+                    const artistData = await (0, spotifyRequest_1.fetchSpotify)('https://api.spotify.com/v1/artists', token, refreshToken ?? '', { ids: batch.join(',') }, 2, res);
+                    artistData.artists.forEach((artist) => {
                         artistMap[artist.id] = {
                             genres: artist.genres,
                             popularity: artist.popularity,
@@ -94,7 +90,7 @@ router.get('/most-streamed-track', async (req, res) => {
                 };
             });
             result[range] = {
-                ...response.data,
+                ...data,
                 items: enrichedTracks,
             };
         }
@@ -102,7 +98,7 @@ router.get('/most-streamed-track', async (req, res) => {
     }
     catch (err) {
         console.error('Error fetching most streamed tracks:', err);
-        res.status(500).json({ error: 'Failed to fetch most streamed tracks' });
+        res.status(err.status === 401 ? 401 : 500).json({ error: 'Failed to fetch most streamed tracks' });
     }
 });
 // genre counts reflect how often artists appear
@@ -110,16 +106,16 @@ router.get('/most-streamed-track', async (req, res) => {
 // batch in order to reduce num of API calls
 router.get('/top-genres-over-time', async (req, res) => {
     const token = (0, spotifyRequest_1.getAccessToken)(req);
+    const refreshToken = (0, spotifyRequest_1.getRefreshToken)(req);
     (0, spotifyRequest_1.getTimeRangeData)(token, res);
+    if (!token)
+        return;
     const results = (0, spotifyRequest_1.createEmptyTimeRangeResult)({});
     try {
         for (const range of spotifyRequest_1.timeRanges) {
             // Get top 50 tracks for this time range
-            const response = await axios_1.default.get('https://api.spotify.com/v1/me/top/tracks', {
-                headers: { Authorization: `Bearer ${token}` },
-                params: { time_range: range, limit: 50 },
-            });
-            const tracks = response.data.items;
+            const data = await (0, spotifyRequest_1.fetchSpotify)('https://api.spotify.com/v1/me/top/tracks', token, refreshToken ?? '', { time_range: range, limit: 50 }, 2, res);
+            const tracks = data.items;
             // Count artist frequencies
             const artistFrequency = {};
             for (const track of tracks) {
@@ -136,11 +132,8 @@ router.get('/top-genres-over-time', async (req, res) => {
             // Fetch artists in batches and weight genres by frequency
             const genreCounts = {};
             for (const batch of batches) {
-                const artistResponse = await axios_1.default.get('https://api.spotify.com/v1/artists', {
-                    headers: { Authorization: `Bearer ${token}` },
-                    params: { ids: batch.join(',') },
-                });
-                for (const artist of artistResponse.data.artists) {
+                const artistData = await (0, spotifyRequest_1.fetchSpotify)('https://api.spotify.com/v1/artists', token, refreshToken ?? '', { ids: batch.join(',') }, 2, res);
+                for (const artist of artistData.artists) {
                     const multiplier = artistFrequency[artist.id]; // times this artist appeared
                     for (const genre of artist.genres || []) {
                         genreCounts[genre] = (genreCounts[genre] || 0) + multiplier;
@@ -158,7 +151,7 @@ router.get('/top-genres-over-time', async (req, res) => {
             status: error.response?.status,
             data: error.response?.data,
         });
-        res.status(500).json({ error: 'Failed to fetch genre trends' });
+        res.status(error.status === 401 ? 401 : 500).json({ error: 'Failed to fetch genre trends' });
     }
 });
 exports.default = router;

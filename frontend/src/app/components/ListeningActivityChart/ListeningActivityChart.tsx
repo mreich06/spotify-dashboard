@@ -6,6 +6,12 @@ import { fetchGenreTrends } from '@/app/store/genreTrendsSlice';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import GlassCard from '../GlassCard/GlassCard';
 import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
+import { TimeRange } from '@/app/types/spotify';
+
+type ChartRow = {
+  time: TimeRange;
+  [genre: string]: number | TimeRange;
+};
 
 // from top-genres-over-time route
 const TopGenresOverTimeChart = () => {
@@ -32,15 +38,15 @@ const TopGenresOverTimeChart = () => {
   // Sort by total and pick top 5
   const topGenres = genreTotals
     .sort((a, b) => b.total - a.total)
-    .slice(0, 5) // <-- change this number to show more/less
+    .slice(0, 5) // change this number to show more/less
     .map((g) => g.genre);
 
-  // Put into chart data format
-  // [{ time: "short_term", pop: 10, rock: 5, ... }, ...]
-  const chartData = Object.entries(data).map(([range, rangeData]) => {
-    const row: Record<string, any> = { time: range };
+  // % of each range's total, so ranges are actually comparable
+  const chartData: ChartRow[] = Object.entries(data).map(([range, rangeData]) => {
+    const rangeTotal = Object.values(rangeData).reduce((sum, count) => sum + count, 0) || 1;
+    const row: ChartRow = { time: range as TimeRange };
     for (const genre of topGenres) {
-      row[genre] = rangeData[genre] || 0;
+      row[genre] = Math.round(((rangeData[genre] || 0) / rangeTotal) * 100);
     }
     return row;
   });
@@ -54,11 +60,12 @@ const TopGenresOverTimeChart = () => {
             <LineChart data={chartData}>
               <CartesianGrid stroke="#1a2a21" strokeDasharray="3 3" />
               <XAxis dataKey="time" stroke="#ccc" /> {/* short, medium, long term */}
-              <YAxis stroke="#ccc" /> {/* genre counts */}
+              <YAxis stroke="#ccc" domain={[0, 'dataMax + 5']} unit="%" /> {/* % share of that range's genres, scaled to whatever the data actually hits */}
               <Tooltip
                 contentStyle={{ backgroundColor: '#1a1a1a', border: 'none' }}
                 labelStyle={{ color: '#22c55e' }}
                 cursor={{ fill: '#1e293b33' }}
+                formatter={(value: number) => [`${value}%`]}
               />
               <Legend />
               {/* Render only top n genres */}

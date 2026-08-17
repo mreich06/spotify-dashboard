@@ -6,6 +6,8 @@ import { fetchTopArtists } from '@/app/store/topArtistsSlice';
 import FadeInWhenVisible from '../FadInWhenVisible/FadeInWhenVisible';
 import GlassCard from '../GlassCard/GlassCard';
 import { capitalizeFirstLetter } from '@/lib/utils';
+import { User } from 'lucide-react';
+import Image from 'next/image';
 
 const TopArtistsDetails = () => {
   const dispatch = useAppDispatch();
@@ -36,7 +38,13 @@ const TopArtistsDetails = () => {
               {artists.slice(0, 5).map((artist) => (
                 <tr key={artist.id} className="border-b border-[#1a2a21]">
                   <td className="py-2 pr-4 flex items-center gap-3">
-                    <img src={artist.images?.[0]?.url ?? '/fallback.jpg'} alt={artist.name} className="w-8 h-8 rounded-full object-cover" />
+                    {artist.images?.[0]?.url ? (
+                      <Image src={artist.images[0].url} alt={artist.name} width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-[#1a2a21] flex items-center justify-center shrink-0">
+                        <User className="w-4 h-4 text-white/70" />
+                      </div>
+                    )}
                     <a href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-green-300 hover:underline">
                       {artist.name}
                     </a>

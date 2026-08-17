@@ -42,36 +42,58 @@ export const refreshAccessToken = async (refreshToken: string) => {
   return response.data; // contains access_token and expires_in
 };
 
-/**
- * Fetcher that handles both 401 (expired token) and 429 (rate limit)
- */
-export const fetchSpotify = async <T>(url: string, accessToken: string, refreshToken: string, params = {}, retries = 2): Promise<T> => {
+// so routes can send 401 instead of 500 when the refresh itself fails
+class SpotifyAuthError extends Error {
+  status = 401;
+}
+
+// retries on expired tokens (401) and rate limits (429), passes new tokens back via res
+export const fetchSpotify = async <T>(
+  url: string,
+  accessToken: string,
+  refreshToken: string,
+  params = {},
+  retries = 2,
+  res?: Response,
+): Promise<T> => {
   try {
-    const res = await axios.get<T>(url, {
+    const response = await axios.get<T>(url, {
       headers: { Authorization: `Bearer ${accessToken}` },
       params,
     });
-    return res.data;
+    return response.data;
   } catch (err: any) {
     const status = err.response?.status;
 
-    // Handle rate limiting
+    // rate limited, back off and try again
     if (status === 429 && retries > 0) {
       const retryAfter = parseInt(err.response.headers['retry-after'] || '1', 10) * 1000;
       console.warn(`Rate limited. Retrying after ${retryAfter} ms...`);
       await new Promise((resolve) => setTimeout(resolve, retryAfter));
-      return fetchSpotify<T>(url, accessToken, refreshToken, params, retries - 1);
+      return fetchSpotify<T>(url, accessToken, refreshToken, params, retries - 1, res);
     }
 
-    // Handle expired token
+    // token's expired, try refreshing it
     if (status === 401 && refreshToken) {
       console.warn('Access token expired. Refreshing...');
-      const refreshed = await refreshAccessToken(refreshToken);
-      const res = await axios.get<T>(url, {
+      let refreshed;
+      try {
+        refreshed = await refreshAccessToken(refreshToken);
+      } catch (refreshErr) {
+        console.warn('Refresh token invalid or expired. User must log in again.');
+        throw new SpotifyAuthError('Refresh token invalid or expired');
+      }
+
+      res?.setHeader('x-new-access-token', refreshed.access_token);
+      if (refreshed.refresh_token) {
+        res?.setHeader('x-new-refresh-token', refreshed.refresh_token);
+      }
+
+      const retried = await axios.get<T>(url, {
         headers: { Authorization: `Bearer ${refreshed.access_token}` },
         params,
       });
-      return res.data;
+      return retried.data;
     }
 
     throw err;
@@ -92,7 +114,7 @@ export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: R
 
   try {
     const url = `https://api.spotify.com/v1/${endpoint}`;
-    const data = await fetchSpotify<T>(url, accessToken, refreshToken);
+    const data = await fetchSpotify<T>(url, accessToken, refreshToken, {}, 2, res);
 
     if (customHandler) {
       await customHandler(data, req, res);
@@ -101,11 +123,13 @@ export const fetchSpotifyData = async <T>(endpoint: string, req: Request, res: R
     }
   } catch (error: any) {
     console.error(`Failed to fetch ${endpoint}`, error.message);
-    res.status(500).json({ error: `Failed to fetch ${endpoint}` });
+    res.status(error.status === 401 ? 401 : 500).json({ error: `Failed to fetch ${endpoint}` });
   }
 };
 
 export const getAccessToken = (req: Request) => req.headers.authorization?.replace('Bearer ', '');
+
+export const getRefreshToken = (req: Request) => req.headers['x-refresh-token'] as string | undefined;
 
 export const createEmptyTimeRangeResult = <T>(defaultValue: T): Record<TimeRange, T> => ({
   short_term: defaultValue,

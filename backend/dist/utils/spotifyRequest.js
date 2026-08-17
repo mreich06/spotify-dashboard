@@ -3,131 +3,117 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTimeRangeData = exports.timeRanges = exports.createEmptyTimeRangeResult = exports.getAccessToken = exports.batchFetchArtists = exports.fetchSpotifyData = exports.fetchWithRefresh = exports.refreshAccessToken = void 0;
+exports.getTimeRangeData = exports.timeRanges = exports.createEmptyTimeRangeResult = exports.getRefreshToken = exports.getAccessToken = exports.fetchSpotifyData = exports.fetchSpotify = exports.refreshAccessToken = void 0;
 const axios_1 = __importDefault(require("axios"));
 const querystring_1 = __importDefault(require("querystring"));
-const fetchWithRetry = async (endpoint, token, retries = 2) => {
-    try {
-        const response = await axios_1.default.get(`https://api.spotify.com/v1/${endpoint}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return response.data;
-    }
-    catch (error) {
-        if (error.response?.status === 429 && retries > 0) {
-            const retryAfter = parseInt(error.response.headers['retry-after'] || '1', 10) * 1000;
-            await new Promise((resolve) => setTimeout(resolve, retryAfter));
-            return fetchWithRetry(endpoint, token, retries - 1);
-        }
-        throw error;
-    }
-};
+/**
+ * Refresh an access token using the refresh token.
+ */
 const refreshAccessToken = async (refreshToken) => {
     const authString = `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`;
     const encodedAuth = Buffer.from(authString).toString('base64');
-    try {
-        const response = await axios_1.default.post('https://accounts.spotify.com/api/token', querystring_1.default.stringify({
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken,
-        }), {
-            headers: {
-                Authorization: `Basic ${encodedAuth}`,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        });
-        return response.data; // contains access_token and expires_in
-    }
-    catch (err) {
-        const error = err; // or use a custom error type
-        console.error('Error refreshing access token:', error.response?.data || error.message);
-    }
+    const response = await axios_1.default.post('https://accounts.spotify.com/api/token', querystring_1.default.stringify({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+    }), {
+        headers: {
+            Authorization: `Basic ${encodedAuth}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+    });
+    return response.data; // contains access_token and expires_in
 };
 exports.refreshAccessToken = refreshAccessToken;
-const fetchWithRefresh = async (token, refreshToken, url, params = {}) => {
+// so routes can send 401 instead of 500 when the refresh itself fails
+class SpotifyAuthError extends Error {
+    constructor() {
+        super(...arguments);
+        this.status = 401;
+    }
+}
+// retries on expired tokens (401) and rate limits (429), passes new tokens back via res
+const fetchSpotify = async (url, accessToken, refreshToken, params = {}, retries = 2, res) => {
     try {
-        const res = await axios_1.default.get(url, {
-            headers: { Authorization: `Bearer ${token}` },
+        const response = await axios_1.default.get(url, {
+            headers: { Authorization: `Bearer ${accessToken}` },
             params,
         });
-        return res.data;
+        return response.data;
     }
     catch (err) {
-        if (err.response?.status === 401) {
-            // Token expired, try refreshing
-            const refreshed = await (0, exports.refreshAccessToken)(refreshToken); // implement this
-            const res = await axios_1.default.get(url, {
+        const status = err.response?.status;
+        // rate limited, back off and try again
+        if (status === 429 && retries > 0) {
+            const retryAfter = parseInt(err.response.headers['retry-after'] || '1', 10) * 1000;
+            console.warn(`Rate limited. Retrying after ${retryAfter} ms...`);
+            await new Promise((resolve) => setTimeout(resolve, retryAfter));
+            return (0, exports.fetchSpotify)(url, accessToken, refreshToken, params, retries - 1, res);
+        }
+        // token's expired, try refreshing it
+        if (status === 401 && refreshToken) {
+            console.warn('Access token expired. Refreshing...');
+            let refreshed;
+            try {
+                refreshed = await (0, exports.refreshAccessToken)(refreshToken);
+            }
+            catch (refreshErr) {
+                console.warn('Refresh token invalid or expired. User must log in again.');
+                throw new SpotifyAuthError('Refresh token invalid or expired');
+            }
+            res?.setHeader('x-new-access-token', refreshed.access_token);
+            if (refreshed.refresh_token) {
+                res?.setHeader('x-new-refresh-token', refreshed.refresh_token);
+            }
+            const retried = await axios_1.default.get(url, {
                 headers: { Authorization: `Bearer ${refreshed.access_token}` },
                 params,
             });
-            return res.data;
+            return retried.data;
         }
-        else {
-            throw err;
-        }
+        throw err;
     }
 };
-exports.fetchWithRefresh = fetchWithRefresh;
+exports.fetchSpotify = fetchSpotify;
+/**
+ * Route helper: wrap fetchSpotify for use inside Express routes.
+ */
 const fetchSpotifyData = async (endpoint, req, res, customHandler) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    console.log('Access token:', token);
-    if (!token) {
-        res.status(401).json({ error: 'Access token is missing' });
+    const accessToken = req.headers.authorization?.replace('Bearer ', '');
+    const refreshToken = req.headers['x-refresh-token'];
+    if (!accessToken || !refreshToken) {
+        res.status(401).json({ error: 'Access or refresh token is missing' });
         return;
     }
     try {
-        const data = await fetchWithRetry(endpoint, token);
+        const url = `https://api.spotify.com/v1/${endpoint}`;
+        const data = await (0, exports.fetchSpotify)(url, accessToken, refreshToken, {}, 2, res);
         if (customHandler) {
             await customHandler(data, req, res);
         }
         else {
-            console.log('response.data', data, 'endpoint is', endpoint);
             res.json(data);
         }
     }
     catch (error) {
-        console.error(`Error fetching ${endpoint}:`, {
-            message: error.message,
-            status: error.response?.status,
-            data: error.response?.data,
-        });
-        res.status(500).json({ error: `Failed to fetch ${endpoint}` });
+        console.error(`Failed to fetch ${endpoint}`, error.message);
+        res.status(error.status === 401 ? 401 : 500).json({ error: `Failed to fetch ${endpoint}` });
     }
 };
 exports.fetchSpotifyData = fetchSpotifyData;
-const batchFetchArtists = async (artistIds, token) => {
-    const batches = [];
-    for (let i = 0; i < artistIds.length; i += 50) {
-        const batch = artistIds.slice(i, i + 50);
-        try {
-            const response = await fetchWithRetry(`artists?ids=${batch.join(',')}`, token);
-            batches.push(...response.artists);
-        }
-        catch (err) {
-            console.error('Error fetching batch:', batch, err);
-        }
-    }
-    return batches;
-};
-exports.batchFetchArtists = batchFetchArtists;
-const getAccessToken = (req) => {
-    return req.headers.authorization?.replace('Bearer ', '');
-};
+const getAccessToken = (req) => req.headers.authorization?.replace('Bearer ', '');
 exports.getAccessToken = getAccessToken;
-const createEmptyTimeRangeResult = (defaultValue) => {
-    return {
-        short_term: defaultValue,
-        medium_term: defaultValue,
-        long_term: defaultValue,
-    };
-};
+const getRefreshToken = (req) => req.headers['x-refresh-token'];
+exports.getRefreshToken = getRefreshToken;
+const createEmptyTimeRangeResult = (defaultValue) => ({
+    short_term: defaultValue,
+    medium_term: defaultValue,
+    long_term: defaultValue,
+});
 exports.createEmptyTimeRangeResult = createEmptyTimeRangeResult;
 exports.timeRanges = ['short_term', 'medium_term', 'long_term'];
 const getTimeRangeData = (token, res) => {
     if (!token) {
         res.status(401).json({ error: 'Access token is missing' });
-        return;
     }
 };
 exports.getTimeRangeData = getTimeRangeData;

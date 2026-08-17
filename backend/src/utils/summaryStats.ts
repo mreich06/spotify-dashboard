@@ -1,17 +1,17 @@
 import type { Request, Response } from 'express';
-import axios from 'axios';
-import { getAccessToken, timeRanges, createEmptyTimeRangeResult } from '../utils/spotifyRequest';
+import { fetchSpotify, getAccessToken, getRefreshToken, timeRanges, createEmptyTimeRangeResult } from '../utils/spotifyRequest';
 
 interface SummaryStats {
   totalTracks: number;
   totalMinutes: string;
-  avgMinutesPerDay: number;
-  avgPlaysPerDay: number;
+  avgTrackLength: string;
+  avgPopularity: number;
   genres: { name: string; count: number }[];
 }
 
 export const fetchSummaryStats = async (req: Request, res: Response): Promise<void> => {
   const token = getAccessToken(req);
+  const refreshToken = getRefreshToken(req);
   if (!token) {
     res.status(401).json({ error: 'Access token is missing' });
     return;
@@ -20,37 +20,44 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
   const result = createEmptyTimeRangeResult<SummaryStats>({
     totalTracks: 0,
     totalMinutes: '0.0',
-    avgMinutesPerDay: 0,
-    avgPlaysPerDay: 0,
+    avgTrackLength: '0.0',
+    avgPopularity: 0,
     genres: [],
   });
 
   try {
     for (const range of timeRanges) {
-      const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { time_range: range, limit: 50 },
-      });
+      const data = await fetchSpotify<{ items: any[]; total: number }>(
+        'https://api.spotify.com/v1/me/top/tracks',
+        token,
+        refreshToken ?? '',
+        { time_range: range, limit: 50 },
+        2,
+        res,
+      );
 
-      const items = response.data.items;
+      const items = data.items;
       if (!items || !Array.isArray(items)) continue;
 
-      const totalTracks = items.length;
+      const totalTracks = data.total; // Spotify's real count, not just this page's size
       const totalMinutes = items.reduce((sum: number, track: any) => sum + track.duration_ms / 60000, 0);
-      const days = range === 'short_term' ? 28 : range === 'medium_term' ? 180 : 730;
-      const avgMinutesPerDay = +(totalMinutes / days).toFixed(1);
-      const avgPlaysPerDay = +(totalTracks / days).toFixed(1);
+      const avgTrackLength = +(totalMinutes / items.length).toFixed(1);
+      const avgPopularity = +(items.reduce((sum: number, track: any) => sum + (track.popularity || 0), 0) / items.length).toFixed(1);
 
       const artistIds = Array.from(new Set(items.flatMap((track: any) => track.artists.map((artist: any) => artist.id)))).slice(0, 50);
       const genreMap: Record<string, number> = {};
 
       if (artistIds.length > 0) {
-        const artistResponse = await axios.get('https://api.spotify.com/v1/artists', {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { ids: artistIds.join(',') },
-        });
+        const artistData = await fetchSpotify<{ artists: any[] }>(
+          'https://api.spotify.com/v1/artists',
+          token,
+          refreshToken ?? '',
+          { ids: artistIds.join(',') },
+          2,
+          res,
+        );
 
-        artistResponse.data.artists.forEach((artist: any) => {
+        artistData.artists.forEach((artist: any) => {
           artist.genres.forEach((genre: string) => {
             genreMap[genre] = (genreMap[genre] || 0) + 1;
           });
@@ -65,8 +72,8 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
       result[range] = {
         totalTracks,
         totalMinutes: totalMinutes.toFixed(1),
-        avgMinutesPerDay,
-        avgPlaysPerDay,
+        avgTrackLength: avgTrackLength.toFixed(1),
+        avgPopularity,
         genres,
       };
     }
@@ -78,6 +85,6 @@ export const fetchSummaryStats = async (req: Request, res: Response): Promise<vo
       status: err.response?.status,
       data: err.response?.data,
     });
-    res.status(500).json({ error: 'Failed to fetch summary stats' });
+    res.status(err.status === 401 ? 401 : 500).json({ error: 'Failed to fetch summary stats' });
   }
 };

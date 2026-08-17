@@ -6,6 +6,11 @@ import tokenReducer from '@/app/store/tokenSlice';
 import topTracksReducer from '@/app/store/topTracksSlice';
 import artistsReducer from '@/app/store/artistsSlice';
 import playlistsReducer from '@/app/store/playlistsSlice';
+import summaryStatsReducer from '@/app/store/summarySlice';
+import timeRangeReducer, { TimeRange } from '@/app/store/timeRangeSlice';
+import MostStreamedTrackReducer from '@/app/store/mostStreamedTrackSlice';
+import TopArtistsReducer from '@/app/store/topArtistsSlice';
+import GenreTrendsReducer from '@/app/store/genreTrendsSlice';
 
 import type { SpotifyTrack, SpotifyArtist, SpotifyPlaylist } from '@/app/types/spotify';
 
@@ -15,7 +20,12 @@ export const renderWithStore = (ui: React.ReactNode) => {
       token: tokenReducer,
       topTracks: topTracksReducer,
       artists: artistsReducer,
-      playlists: playlistsReducer,
+      topPlaylists: playlistsReducer,
+      summaryStats: summaryStatsReducer,
+      timeRange: timeRangeReducer,
+      mostStreamedTrack: MostStreamedTrackReducer,
+      topArtists: TopArtistsReducer,
+      genreTrends: GenreTrendsReducer,
     },
     preloadedState: {
       token: { accessToken: 'mockToken' },
@@ -91,7 +101,7 @@ export const renderWithStore = (ui: React.ReactNode) => {
         error: null,
       },
 
-      playlists: {
+      topPlaylists: {
         playlists: {
           short_term: {
             href: 'https://api.spotify.com/v1/me/playlists',
@@ -110,11 +120,121 @@ export const renderWithStore = (ui: React.ReactNode) => {
                 uri: 'spotify:playlist:mockuri',
                 type: 'playlist',
                 external_urls: { spotify: '' },
-              } as SpotifyPlaylist,
+              },
             ],
           },
           medium_term: { href: '', limit: 0, total: 0, items: [] },
           long_term: { href: '', limit: 0, total: 0, items: [] },
+        },
+        loading: false,
+        error: null,
+      },
+      summaryStats: {
+        stats: {
+          short_term: {
+            totalTracks: 15,
+            totalMinutes: '45.2',
+            avgTrackLength: '3.0',
+            avgPopularity: 62,
+            genres: [
+              { name: 'pop', count: 5 },
+              { name: 'rock', count: 3 },
+              { name: 'jazz', count: 2 },
+              { name: 'classical', count: 1 },
+              { name: 'hip hop', count: 1 },
+            ],
+          },
+          medium_term: {
+            totalTracks: 40,
+            totalMinutes: '120.7',
+            avgTrackLength: '3.0',
+            avgPopularity: 58,
+            genres: [
+              { name: 'pop', count: 10 },
+              { name: 'rock', count: 8 },
+              { name: 'electronic', count: 6 },
+              { name: 'jazz', count: 4 },
+              { name: 'indie', count: 3 },
+            ],
+          },
+          long_term: {
+            totalTracks: 120,
+            totalMinutes: '360.3',
+            avgTrackLength: '3.0',
+            avgPopularity: 65,
+            genres: [
+              { name: 'pop', count: 25 },
+              { name: 'rock', count: 20 },
+              { name: 'indie', count: 15 },
+              { name: 'electronic', count: 12 },
+              { name: 'jazz', count: 8 },
+            ],
+          },
+        },
+        loading: false,
+        error: null,
+      },
+      timeRange: { selectedRange: 'short_term' as TimeRange },
+      mostStreamedTrack: {
+        track: {
+          short_term: { items: [] },
+          medium_term: { items: [] },
+          long_term: {
+            items: [
+              {
+                id: 'track_1',
+                name: 'Mock Track',
+                album: {
+                  id: 'album_1',
+                  name: 'Mock Album',
+                  album_type: 'album',
+                  images: [{ url: 'https://placekitten.com/200/200', height: 200, width: 200 }],
+                  total_tracks: 1,
+                  available_markets: [],
+                  href: '',
+                  uri: '',
+                  type: 'album',
+                  release_date: '2020-01-01',
+                  release_date_precision: 'day',
+                  artists: [],
+                  external_urls: { spotify: '' },
+                },
+                artists: [{ id: 'artist_1', name: 'Mock Artist', external_urls: { spotify: '' }, type: 'artist' }],
+                duration_ms: 200000,
+                popularity: 80,
+                genres: ['pop'],
+                uri: '',
+                href: '',
+                type: 'track',
+                external_urls: { spotify: '' },
+                images: [],
+              },
+            ],
+          },
+        },
+        loading: false,
+        error: null,
+      },
+      topArtists: {
+        artists: [
+          {
+            id: 'artist_1',
+            name: 'Mock Artist',
+            genres: ['pop'],
+            images: [],
+            popularity: 80,
+            followers: { total: 1000 },
+            external_urls: { spotify: '' },
+          },
+        ],
+        loading: false,
+        error: null,
+      },
+      genreTrends: {
+        data: {
+          short_term: { pop: 10, rock: 5 },
+          medium_term: { pop: 20 },
+          long_term: { rock: 10 },
         },
         loading: false,
         error: null,
