@@ -22,7 +22,7 @@ const fetchSummaryStats = async (req, res) => {
             const items = data.items;
             if (!items || !Array.isArray(items))
                 continue;
-            const totalTracks = data.total;
+            const totalTracks = data.total; // Spotify's real count, not just this page's size
             const totalMinutes = items.reduce((sum, track) => sum + track.duration_ms / 60000, 0);
             const avgTrackLength = +(totalMinutes / items.length).toFixed(1);
             const avgPopularity = +(items.reduce((sum, track) => sum + (track.popularity || 0), 0) / items.length).toFixed(1);
